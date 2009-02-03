@@ -549,7 +549,7 @@ namespace detail  {
     class DirectCallInstanceMemberFunction 
     {
     public:
-        static inline int Dispatch(HSQUIRRELVM v) 
+        static inline SQInteger Dispatch(HSQUIRRELVM v) 
         {
             StackHandler sa(v);
             Callee* instance(0); 

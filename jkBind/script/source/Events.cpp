@@ -1,6 +1,7 @@
 #include <script/Events.h>
 #include <script/detail/Classes.h>
 #include <script/Declarator.h>
+#include <stddef.h>
 #include <new>
 
 #include <memory.h>
