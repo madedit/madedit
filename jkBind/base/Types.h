@@ -9,14 +9,22 @@ namespace base {
     typedef unsigned char       uint8;
     typedef signed short        sint16;
     typedef unsigned short      uint16;
-    typedef signed long         sint32;
-    typedef unsigned long       uint32;
+    typedef signed int          sint32;
+    typedef unsigned int        uint32;
     
     //
     // Platfrom-independed, but not guaranteed
     //
+#if defined(_MSC_VER)
     typedef signed __int64      sint64;
     typedef unsigned __int64    uint64;
+#elif defined(_LP64)
+    typedef long                sint64;
+    typedef unsigned long       uint64;
+#else
+    typedef long long           sint64;
+    typedef unsigned long long  uint64;
+#endif
     
     //
     // Platform-optimized types
