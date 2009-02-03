@@ -116,7 +116,7 @@ namespace script {
         {
             typedef typename ptr::pointer<RT>::HostType HostType;
             detail::ClassesManager::createObjectInstanceOnStackPure2(v, ClassTraits<HostType>::classID(), ptr::pointer<RT>::to(result));
-            sq_setreleasehook(v, 1, _memoryControllerHook<ptr::pointer<RT>::HostType>);
+            sq_setreleasehook(v, 1, _memoryControllerHook<HostType>);
         }
 
     private:
