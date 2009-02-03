@@ -4,7 +4,11 @@
 /// This is main script binding engine configuration file.
 ///
 
+#if defined(_MSC_VER) && defined(_DEBUG)
 #include <crtdbg.h>
+#else
+#include <assert.h>
+#endif
 #include <memory.h>
 
 /////////////////////////////////////////////////////////////////////////////
@@ -42,6 +46,8 @@
 /// and fails if condition is false. Can be defined to raise an exception.
 ///
 
+#if defined(_MSC_VER) && defined(_DEBUG)
+
 #define jkSCRIPT_API_ASSERTION( condidion )             \
     {                                                   \
         const char reason[] = { #condidion };           \
@@ -49,6 +55,16 @@
             __debugbreak();                             \
     }
 
+#else
+
+#define jkSCRIPT_API_ASSERTION( condidion )             \
+    {                                                   \
+        const char reason[] = { #condidion };           \
+        bool result = (condidion);                      \
+        assert(result);                                 \
+    }
+
+#endif
 
 ////////////////////////////////////////////////////////////////////////////
 /// This define declares assertion, used to check runtime logic conditions.
