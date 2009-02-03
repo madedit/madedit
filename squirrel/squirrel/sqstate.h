@@ -124,7 +124,7 @@ private:
 #define _weakref_ddel	_table(_sharedstate->_weakref_default_delegate) 
 
 #ifdef SQUNICODE //rsl REAL STRING LEN
-#define rsl(l) ((l)<<1)
+#define rsl(l) ((l) * sizeof(SQChar))
 #else
 #define rsl(l) (l)
 #endif
