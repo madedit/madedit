@@ -4,7 +4,7 @@ namespace base {
 
     Object::~Object()
     { 
-        _ASSERTE(_referenceCounter == 0); 
+        assert(_referenceCounter == 0); 
 
         if(_weakPtr) {
             detail::WeakPtrImpl* slider = _weakPtr;

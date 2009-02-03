@@ -2,7 +2,7 @@
 #define ___BASE_BASE_H___
 
 #include <base/Types.h>
-#include <crtdbg.h>
+#include <assert.h>
 
 namespace base
 {
@@ -52,8 +52,8 @@ namespace base
 
             ~WeakPtrImpl()
             {
-                _ASSERTE(_next == 0);
-                _ASSERTE(_prev == 0);
+                assert(_next == 0);
+                assert(_prev == 0);
             }
 
         protected:
@@ -63,11 +63,11 @@ namespace base
             {
                 if (object) {
                     //target exists
-                    _ASSERTE(_next);
-                    _ASSERTE(_prev);
+                    assert(_next);
+                    assert(_prev);
                     if(_next == this) {
                         //we are the only weakref
-                        _ASSERTE(_next == _prev);
+                        assert(_next == _prev);
                         object->_weakPtr = 0;
                     } else {
                         //we are in the list - unlinking
@@ -80,8 +80,8 @@ namespace base
                     }
                 } else {
                     //no target - clearing self
-                    _ASSERTE(_next == 0);
-                    _ASSERTE(_prev == 0);
+                    assert(_next == 0);
+                    assert(_prev == 0);
                 }
 
                 _next = 0;
@@ -125,7 +125,7 @@ namespace base
             
             static inline void decrementReferenceCount(Object* object)
             {
-                _ASSERTE(object->_referenceCounter > 0);
+                assert(object->_referenceCounter > 0);
                 object->_referenceCounter--;
                 if (object->_referenceCounter == 0) delete object;
             }
@@ -202,7 +202,7 @@ namespace base
         {
             if(_next) {
                 //linked - so object exists
-                _ASSERTE(_prev != 0);
+                assert(_prev != 0);
                 return _object;
             }
             return 0;
