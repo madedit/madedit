@@ -431,4 +431,9 @@ SQUIRREL_API void sq_setdebughook(HSQUIRRELVM v);
 } /*extern "C"*/
 #endif
 
+#ifdef SQUNICODE
+#include <wchar.h>
+#include <wctype.h>
+#endif
+
 #endif /*_SQUIRREL_H_*/

@@ -65,7 +65,7 @@ public:
 		static SQChar temp[256];
 		va_list vl;
 		va_start(vl, s);
-		scvsprintf(temp, s, vl);
+		scvsprintf(temp, 256, s, vl);
 		va_end(vl);
 		compilererror = temp;
 		longjmp(_errorjmp,1);

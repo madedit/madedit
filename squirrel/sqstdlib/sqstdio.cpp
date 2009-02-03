@@ -5,6 +5,60 @@
 #include <sqstdio.h>
 #include "sqstdstream.h"
 
+#if !defined(WIN32) && defined(SQUNICODE)
+#include <string>
+size_t wchar2utf8(wchar_t ucs4, char *buf)
+{
+    if(ucs4<0)
+        return 0;
+
+    if(ucs4<=0x7F)
+    {
+        buf[0]=ucs4;
+        return 1;
+    }
+    if(ucs4<=0x7FF)
+    {
+        buf[0]= 0xC0 | (ucs4>>6);
+        buf[1]= 0x80 | (ucs4&0x3F);
+        return 2;
+    }
+    if(ucs4<=0xFFFF)
+    {
+        buf[0]= 0xE0 | (ucs4>>12);
+        buf[1]= 0x80 | ((ucs4>>6)&0x3F);
+        buf[2]= 0x80 | (ucs4&0x3F);
+        return 3;
+    }
+    if(ucs4<=0x10FFFF)
+    {
+        buf[0]= 0xF0 | (ucs4>>18);
+        buf[1]= 0x80 | ((ucs4>>12)&0x3F);
+        buf[2]= 0x80 | ((ucs4>>6)&0x3F);
+        buf[3]= 0x80 | (ucs4&0x3F);
+        return 4;
+    }
+
+    return 0;
+}
+
+std::string wstr2str(const wchar_t *wstr)
+{
+    std::string result;
+    char buf[5];
+    while(*wstr != 0)
+    {
+        size_t len = wchar2utf8(*wstr, buf);
+        buf[len] = 0;
+        result += buf;
+        ++wstr;
+    };
+    return result;
+}
+
+#endif
+
+
 #define SQSTD_FILE_TYPE_TAG (SQSTD_STREAM_TYPE_TAG | 0x00000001)
 //basic API
 SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
@@ -12,7 +66,15 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
 #ifndef SQUNICODE
 	return (SQFILE)fopen(filename,mode);
 #else
+
+#ifdef WIN32
 	return (SQFILE)_wfopen(filename,mode);
+#else
+    std::string utf8str1(wstr2str(filename));
+    std::string utf8str2(wstr2str(mode));
+    return (SQFILE)fopen(utf8str1.c_str(), utf8str2.c_str());
+#endif
+
 #endif
 }
 

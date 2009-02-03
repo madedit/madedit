@@ -7,6 +7,11 @@
 #include <ctype.h>
 #include <assert.h>
 
+#if !defined(WIN32) && defined(SQUNICODE)
+#include <string>
+extern std::string wstr2str(const wchar_t *wstr);
+#endif
+
 #ifdef SQUNICODE
 #define scstrchr wcschr
 #define scsnprintf wsnprintf
@@ -38,7 +43,12 @@ static SQInteger validate_format(HSQUIRRELVM v, SQChar *fmt, const SQChar *src, 
 	}
 	swidth[wc] = '\0';
 	if(wc > 0) {
+#if defined(WIN32) || !defined(SQUNICODE)
 		width = scatoi(swidth);
+#else
+        std::string str(wstr2str(swidth));
+        width = atoi(str.c_str());
+#endif
 	}
 	else
 		width = 0;
@@ -55,7 +65,12 @@ static SQInteger validate_format(HSQUIRRELVM v, SQChar *fmt, const SQChar *src, 
 		}
 		swidth[wc] = '\0';
 		if(wc > 0) {
+#if defined(WIN32) || !defined(SQUNICODE)
 			width += scatoi(swidth);
+#else
+            std::string str(wstr2str(swidth));
+            width += atoi(str.c_str());
+#endif
 		}
 	}
 	if (n-start > MAX_FORMAT_LEN )
@@ -121,9 +136,9 @@ static SQInteger _string_format(HSQUIRRELVM v)
 			allocated += addlen;
 			dest = sq_getscratchpad(v,allocated);
 			switch(valtype) {
-			case 's': i += scsprintf(&dest[i],fmt,ts); break;
-			case 'i': i += scsprintf(&dest[i],fmt,ti); break;
-			case 'f': i += scsprintf(&dest[i],fmt,tf); break;
+			case 's': i += scsprintf(&dest[i],addlen,fmt,ts); break;
+			case 'i': i += scsprintf(&dest[i],addlen,fmt,ti); break;
+			case 'f': i += scsprintf(&dest[i],addlen,fmt,tf); break;
 			};
 			nparam ++;
 		}
@@ -190,12 +205,21 @@ static SQInteger _string_split(HSQUIRRELVM v)
 	SQInteger memsize = (sq_getsize(v,2)+1)*sizeof(SQChar);
 	stemp = sq_getscratchpad(v,memsize);
 	memcpy(stemp,str,memsize);
+#if !defined(WIN32) && defined(SQUNICODE)
+    SQChar *stemp2;
+    tok = scstrtok(stemp,seps,&stemp2);
+#else
 	tok = scstrtok(stemp,seps);
-	sq_newarray(v,0);
+#endif
+    sq_newarray(v,0);
 	while( tok != NULL ) {
 		sq_pushstring(v,tok,-1);
 		sq_arrayappend(v,-2);
+#if !defined(WIN32) && defined(SQUNICODE)
+        tok = scstrtok( NULL, seps, &stemp2 );
+#else
 		tok = scstrtok( NULL, seps );
+#endif
 	}
 	return 1;
 }

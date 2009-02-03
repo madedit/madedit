@@ -229,13 +229,13 @@ void SQVM::ToString(const SQObjectPtr &o,SQObjectPtr &res)
 		res = o;
 		return;
 	case OT_FLOAT:
-		scsprintf(_sp(rsl(NUMBER_MAX_CHAR+1)),_SC("%g"),_float(o));
+		scsprintf(_sp(rsl(NUMBER_MAX_CHAR+1)),NUMBER_MAX_CHAR+1,_SC("%g"),_float(o));
 		break;
 	case OT_INTEGER:
-		scsprintf(_sp(rsl(NUMBER_MAX_CHAR+1)),_SC("%d"),_integer(o));
+		scsprintf(_sp(rsl(NUMBER_MAX_CHAR+1)),NUMBER_MAX_CHAR+1,_SC("%d"),_integer(o));
 		break;
 	case OT_BOOL:
-		scsprintf(_sp(rsl(6)),_integer(o)?_SC("true"):_SC("false"));
+		scsprintf(_sp(rsl(6)),6,_integer(o)?_SC("true"):_SC("false"));
 		break;
 	case OT_TABLE:
 	case OT_USERDATA:
@@ -249,7 +249,7 @@ void SQVM::ToString(const SQObjectPtr &o,SQObjectPtr &res)
 			}
 		}
 	default:
-		scsprintf(_sp(rsl(sizeof(void*)+20)),_SC("(%s : 0x%p)"),GetTypeName(o),(void*)_rawval(o));
+		scsprintf(_sp(rsl(sizeof(void*)+20)),sizeof(void*)+20,_SC("(%s : 0x%p)"),GetTypeName(o),(void*)_rawval(o));
 	}
 	res = SQString::Create(_ss(this),_spval);
 }

@@ -39,7 +39,7 @@ SQInteger sq_aux_throwobject(HSQUIRRELVM v,SQObjectPtr &e)
 
 SQInteger sq_aux_invalidtype(HSQUIRRELVM v,SQObjectType type)
 {
-	scsprintf(_ss(v)->GetScratchPad(100), _SC("unexpected type %s"), IdType2Name(type));
+	scsprintf(_ss(v)->GetScratchPad(100), 100, _SC("unexpected type %s"), IdType2Name(type));
 	return sq_throwerror(v, _ss(v)->GetScratchPad(-1));
 }
 
