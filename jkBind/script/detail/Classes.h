@@ -4,6 +4,7 @@
 #include <script/VMCore.h>
 #include <script/detail/ScriptObject.h>
 #include <script/detail/ClassTraits.h>
+#include <script/detail/StackHandler.h>
 #include <memory.h>
 
 namespace script {

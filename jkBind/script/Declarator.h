@@ -51,31 +51,31 @@ namespace detail {
         template<typename ReturnPolicy>
         ClassDeclarator&    constructor(const xchar* name)
         {
-            return staticMethod<ReturnPolicy>(name, &constructionFunction<T>);
+            return staticMethod<ReturnPolicy>(name, (T* (*)())&constructionFunction<T>);
         }
 
         template<typename ReturnPolicy, typename A1>
         ClassDeclarator&    constructor(const xchar* name)
         {
-            return staticMethod<ReturnPolicy>(name, &constructionFunction<T, A1>);
+            return staticMethod<ReturnPolicy>(name, (T* (*)(A1))&constructionFunction<T, A1>);
         }
 
         template<typename ReturnPolicy, typename A1, typename A2>
         ClassDeclarator&    constructor(const xchar* name)
         {
-            return staticMethod<ReturnPolicy>(name, &constructionFunction<T, A1, A2>);
+            return staticMethod<ReturnPolicy>(name, (T* (*)(A1, A2))&constructionFunction<T, A1, A2>);
         }
 
         template<typename ReturnPolicy, typename A1, typename A2, typename A3>
         ClassDeclarator&    constructor(const xchar* name)
         {
-            return staticMethod<ReturnPolicy>(name, &constructionFunction<T, A1, A2, A3>);
+            return staticMethod<ReturnPolicy>(name, (T* (*)(A1, A2, A3))&constructionFunction<T, A1, A2, A3>);
         }
 
         template<typename ReturnPolicy, typename A1, typename A2, typename A3, typename A4>
         ClassDeclarator&    constructor(const xchar* name)
         {
-            return staticMethod<ReturnPolicy>(name, &constructionFunction<T, A1, A2, A3, A4>);
+            return staticMethod<ReturnPolicy>(name, (T* (*)(A1, A2, A3, A4))&constructionFunction<T, A1, A2, A3, A4>);
         }
 
         //
