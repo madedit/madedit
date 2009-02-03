@@ -14,6 +14,7 @@ namespace detail {
     public:
         static ScriptObject createClass(HSQUIRRELVM v, ScriptObject& root, ClassID classType, const xchar* name, ClassID parentClass);
         static void createObjectInstanceOnStackPure(HSQUIRRELVM v, ClassID classType, const void* c_this);
+        static void createObjectInstanceOnStackPure2(HSQUIRRELVM v, ClassID classType, const void* c_this);
 
         static void disableCloningForClass(HSQUIRRELVM v, ScriptObject& classObj);
         static void disableCreatingFromScriptForClass(HSQUIRRELVM v, ScriptObject& classObj);

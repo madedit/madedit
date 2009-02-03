@@ -41,6 +41,26 @@ namespace detail {
         sq_pushobject(v, intance.getObjectHandle());
     }
 
+    void ClassesManager::createObjectInstanceOnStackPure2(HSQUIRRELVM v, ClassID classType, const void* c_this)
+    {
+//        int top = sq_gettop(v);
+        //ScriptObject classObj = _findClass(v, classType);
+        //sq_pushobject(v, classObj.handle());
+
+        //stack: types, class
+        //..creating instance
+        //jkSCRIPT_API_VERIFY(sq_createinstance(v, 1));
+       
+        ScriptObject intance(v);
+        intance.attachToStackObject(1);
+
+        //setting up memory controller
+        sq_setinstanceup(v, 1, const_cast<void*>(c_this));
+
+//        sq_settop(v, top);
+        sq_pushobject(v, intance.getObjectHandle());
+    }
+
     ScriptObject ClassesManager::createClass(HSQUIRRELVM v, ScriptObject& root, ClassID classType, const xchar* name, ClassID parentClass)
     {
         ScriptObject newClass(v);
@@ -57,7 +77,8 @@ namespace detail {
 
         newClass.attachToStackObject(-1);
         sq_settypetag(v,-1, classType);             
-        sq_newslot(v,-3, false);                    //root, classname, class
+        //sq_newslot(v,-3, false);                    //root, classname, class
+        sq_createslot(v,-3);
         sq_pop(v,1);                                //root
 
         //

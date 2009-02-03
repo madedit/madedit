@@ -104,6 +104,29 @@ namespace script {
     };
 
     ///
+    /// creates new instance, which deletes host object on destruction and constuctor regist as Squirrel's constructor
+    ///
+    class objOwn2
+    {
+    public:
+        template<typename RT>
+        static inline void pushResult(HSQUIRRELVM v, RT result)
+        {
+            detail::ClassesManager::createObjectInstanceOnStackPure2(v, ClassTraits<ptr::pointer<RT>::HostType>::classID(), ptr::pointer<RT>::to(result));
+            sq_setreleasehook(v, 1, _memoryControllerHook<ptr::pointer<RT>::HostType>);
+        }
+
+    private:
+        template<typename T>
+        static SQInteger _memoryControllerHook(SQUserPointer p,SQInteger size)
+        {
+            T* data = (T*)p;
+            jkSCRIPT_DELETE data;
+            return 1;
+        }
+    };
+
+    ///
     /// creates new instance, which control host objects lifetime by custom ptr-class
     ///
     template<typename PtrClass>
