@@ -1,7 +1,7 @@
 #ifndef ___SCRIPT_DETAIL_CONSTRUCTORS___
 #define ___SCRIPT_DETAIL_CONSTRUCTORS___
 
-#include <script/Custom/CustomSystem.h>
+#include <script/custom/CustomSystem.h>
 
 namespace script {
 namespace detail {
