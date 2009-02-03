@@ -96,7 +96,11 @@ struct SQDelegable;
 #endif
 
 #else
+
+#if defined(_MSC_VER)
 typedef unsigned short wchar_t;
+#endif
+
 #endif
 
 typedef wchar_t SQChar;
