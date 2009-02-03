@@ -6,7 +6,7 @@ namespace detail {
 
     template<typename ResultPolicy, typename Callee, typename RawField>
     inline int PushField(Callee * callee,RawField (Callee::*fieldPtr), HSQUIRRELVM v) {
-        ResultPolicy::pushResult<RawField>(v, (callee->*fieldPtr) );
+        ResultPolicy::template pushResult<RawField>(v, (callee->*fieldPtr) );
         return 1;        
     }
 

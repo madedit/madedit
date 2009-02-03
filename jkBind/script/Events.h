@@ -2,9 +2,10 @@
 #define ___SCRIPT_EVENTS___
 
 #include <script/VMCore.h>
-#include <base/lang.h>
+#include <base/Lang.h>
 #include <script/detail/ScriptObject.h>
 #include <script/detail/ReturnPolicies.h>
+#include <assert.h>
 
 namespace script {
 namespace detail {
@@ -63,7 +64,7 @@ namespace script {
 #define PUSH_ARGUMENT( ndx )                                    \
     {                                                           \
         xCOMPILE_CHECK( !base::is_void< Type##ndx >::value );   \
-        PP##ndx::pushResult<Type##ndx>                          \
+        PP##ndx::template pushResult<Type##ndx>                 \
                 (vm,static_cast<Type##ndx>(a##ndx));            \
         ++argCount;                                             \
     }
@@ -82,7 +83,7 @@ namespace script {
             types::TypeSelect<RetType>(), vm,-1)                \
         )                                                       \
     {                                                           \
-        xERROR("Invalid script function result in Event")       \
+        assert(0 && "Invalid script function result in Event"); \
     }                                                           \
     RetType value =                                             \
         types::get(types::TypeSelect<RetType>(), vm,-1);        \
@@ -124,8 +125,8 @@ namespace script {
             END_CALL
         };
 
-        template<typename T1>
-        RetType call(T1 a1)
+        template<typename T10>
+        RetType call(T10 a1)
         {
             BEGIN_CALL
             PUSH_ARGUMENT(1);
@@ -137,8 +138,8 @@ namespace script {
             END_CALL
         }
 
-        template<typename T1, typename T2>
-        RetType call(T1 a1, T2 a2)
+        template<typename T10, typename T20>
+        RetType call(T10 a1, T20 a2)
         {
             BEGIN_CALL
             PUSH_ARGUMENT(1);
@@ -150,8 +151,8 @@ namespace script {
             END_CALL
         }
 
-        template<typename T1, typename T2, typename T3>
-        RetType call(T1 a1, T2 a2, T3 a3)
+        template<typename T10, typename T20, typename T30>
+        RetType call(T10 a1, T20 a2, T30 a3)
         {
             BEGIN_CALL
             PUSH_ARGUMENT(1);
@@ -163,8 +164,8 @@ namespace script {
             END_CALL
         }
 
-        template<typename T1, typename T2, typename T3, typename T4>
-        RetType call(T1 a1, T2 a2, T3 a3, T4 a4)
+        template<typename T10, typename T20, typename T30, typename T40>
+        RetType call(T10 a1, T20 a2, T30 a3, T40 a4)
         {
             BEGIN_CALL
             PUSH_ARGUMENT(1);
@@ -176,8 +177,8 @@ namespace script {
             END_CALL
         }
 
-        template<typename T1, typename T2, typename T3, typename T4, typename T5>
-        RetType call(T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+        template<typename T10, typename T20, typename T30, typename T40, typename T50>
+        RetType call(T10 a1, T20 a2, T30 a3, T40 a4, T50 a5)
         {
             BEGIN_CALL
             PUSH_ARGUMENT(1);
@@ -189,8 +190,8 @@ namespace script {
             END_CALL
         }
 
-        template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
-        RetType call(T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
+        template<typename T10, typename T20, typename T30, typename T40, typename T50, typename T60>
+        RetType call(T10 a1, T20 a2, T30 a3, T40 a4, T50 a5, T60 a6)
         {
             BEGIN_CALL
             PUSH_ARGUMENT(1);
@@ -235,8 +236,8 @@ namespace script {
             END_CALL
         };
 
-        template<typename T1>
-        RetType call(T1 a1)
+        template<typename T10>
+        RetType call(T10 a1)
         {
             BEGIN_CALL
             PUSH_ARGUMENT(1);
@@ -248,8 +249,8 @@ namespace script {
             END_CALL
         }
 
-        template<typename T1, typename T2>
-        RetType call(T1 a1, T2 a2)
+        template<typename T10, typename T20>
+        RetType call(T10 a1, T20 a2)
         {
             BEGIN_CALL
             PUSH_ARGUMENT(1);
@@ -261,8 +262,8 @@ namespace script {
             END_CALL
         }
 
-        template<typename T1, typename T2, typename T3>
-        RetType call(T1 a1, T2 a2, T3 a3)
+        template<typename T10, typename T20, typename T30>
+        RetType call(T10 a1, T20 a2, T30 a3)
         {
             BEGIN_CALL
             PUSH_ARGUMENT(1);
@@ -274,8 +275,8 @@ namespace script {
             END_CALL
         }
 
-        template<typename T1, typename T2, typename T3, typename T4>
-        RetType call(T1 a1, T2 a2, T3 a3, T4 a4)
+        template<typename T10, typename T20, typename T30, typename T40>
+        RetType call(T10 a1, T20 a2, T30 a3, T40 a4)
         {
             BEGIN_CALL
             PUSH_ARGUMENT(1);
@@ -287,8 +288,8 @@ namespace script {
             END_CALL
         }
 
-        template<typename T1, typename T2, typename T3, typename T4, typename T5>
-        RetType call(T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+        template<typename T10, typename T20, typename T30, typename T40, typename T50>
+        RetType call(T10 a1, T20 a2, T30 a3, T40 a4, T50 a5)
         {
             BEGIN_CALL
             PUSH_ARGUMENT(1);
@@ -300,8 +301,8 @@ namespace script {
             END_CALL
         }
 
-        template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
-        RetType call(T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
+        template<typename T10, typename T20, typename T30, typename T40, typename T50, typename T60>
+        RetType call(T10 a1, T20 a2, T30 a3, T40 a4, T50 a5, T60 a6)
         {
             BEGIN_CALL
             PUSH_ARGUMENT(1);

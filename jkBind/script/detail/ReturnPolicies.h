@@ -76,7 +76,8 @@ namespace script {
         template<typename RT>
         static inline void pushResult(HSQUIRRELVM v, RT result)
         {
-            detail::ClassesManager::createObjectInstanceOnStackPure(v, ClassTraits< ptr::pointer<RT>::HostType >::classID(), ptr::pointer<RT>::to(result));
+            typedef typename ptr::pointer<RT>::HostType HostType;
+            detail::ClassesManager::createObjectInstanceOnStackPure(v, ClassTraits< HostType >::classID(), ptr::pointer<RT>::to(result));
         }
     };
 
@@ -89,7 +90,8 @@ namespace script {
         template<typename RT>
         static inline void pushResult(HSQUIRRELVM v, RT result)
         {
-            detail::ClassesManager::createObjectInstanceOnStackPure(v, ClassTraits<ptr::pointer<RT>::HostType>::classID(), ptr::pointer<RT>::to(result));
+            typedef typename ptr::pointer<RT>::HostType HostType;
+            detail::ClassesManager::createObjectInstanceOnStackPure(v, ClassTraits<HostType>::classID(), ptr::pointer<RT>::to(result));
             sq_setreleasehook(v, -1, _memoryControllerHook<ptr::pointer<RT>::HostType>);
         }
 
@@ -112,7 +114,8 @@ namespace script {
         template<typename RT>
         static inline void pushResult(HSQUIRRELVM v, RT result)
         {
-            detail::ClassesManager::createObjectInstanceOnStackPure2(v, ClassTraits<ptr::pointer<RT>::HostType>::classID(), ptr::pointer<RT>::to(result));
+            typedef typename ptr::pointer<RT>::HostType HostType;
+            detail::ClassesManager::createObjectInstanceOnStackPure2(v, ClassTraits<HostType>::classID(), ptr::pointer<RT>::to(result));
             sq_setreleasehook(v, 1, _memoryControllerHook<ptr::pointer<RT>::HostType>);
         }
 
@@ -136,11 +139,12 @@ namespace script {
         template<typename RT>
         static inline void pushResult(HSQUIRRELVM v, RT result)
         {
-            detail::ClassesManager::createObjectInstanceOnStackPure(v, ClassTraits<ptr::pointer<RT>::HostType>::classID(), ptr::pointer<RT>::to(result));
+            typedef typename ptr::pointer<RT>::HostType HostType;
+            detail::ClassesManager::createObjectInstanceOnStackPure(v, ClassTraits<HostType>::classID(), ptr::pointer<RT>::to(result));
             sq_pushinteger(v, detail::ClassesManager::MEMORY_CONTROLLER_PARAM);
             new(sq_newuserdata(v, sizeof(RT))) RT(result);
             sq_setreleasehook(v, -1, _memoryControllerHook<RT>);
-            jkSCRIPT_VERIFY(sq_set(v, -3));
+            jkSCRIPT_API_VERIFY(sq_set(v, -3));
         }
 
     private:

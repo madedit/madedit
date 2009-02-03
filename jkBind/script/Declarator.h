@@ -7,7 +7,7 @@
 #include <script/detail/Constructors.h>
 #include <script/detail/Classes.h>
 #include <script/detail/Fields.h>
-
+#include <script/Events.h>
 #include <script/detail/ReturnPolicies.h>
 
 namespace script {
@@ -19,7 +19,7 @@ namespace detail {
 	class Declarator
 	{
     public:
-        explicit Declarator(ScriptObject& hostObject, HSQUIRRELVM vm)
+        explicit Declarator(const ScriptObject& hostObject, HSQUIRRELVM vm)
             : _hostObject(hostObject),
             _vm(vm)
         {
@@ -150,7 +150,7 @@ namespace detail {
             sq_pushobject(_vm, _hostObject.getObjectHandle());
             sq_pushstring(_vm,name,-1);
             pushEventPointer(_vm, event);
-            sq_newclosure(_vm, &detail::eventObjectGetter<Class, Event>, 1);
+            sq_newclosure(_vm, &detail::template eventObjectGetter<Class, Event>, 1);
             jkSCRIPT_API_VERIFY(sq_createslot(_vm,-3));
             sq_pop(_vm, 1); //popping host object
             return *this;
@@ -193,7 +193,7 @@ namespace detail {
         {
             sq_pushobject(_vm, _hostObject.getObjectHandle());
             sq_pushstring(_vm, name, -1);
-			pushFieldPointer(_vm, func);
+			pushFieldPointer(_vm, field);
             sq_newclosure(_vm, script::detail::fieldGetterFunction<ReturnPolicy, Class, Field>, 1);
 
             jkSCRIPT_API_VERIFY(sq_newslot(_vm,-3, true));
@@ -209,7 +209,7 @@ namespace detail {
     class GlobalDeclarator: public Declarator
     {
     public:
-        GlobalDeclarator(ScriptObject& hostObject, HSQUIRRELVM vm)
+        GlobalDeclarator(const ScriptObject& hostObject, HSQUIRRELVM vm)
             :Declarator(hostObject, vm)
         {
         }
