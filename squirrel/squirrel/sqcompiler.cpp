@@ -65,7 +65,11 @@ public:
 		static SQChar temp[256];
 		va_list vl;
 		va_start(vl, s);
+#if !defined(__GNUC__) || defined(__MINGW32__)
+		scvsprintf(temp, s, vl);
+#else
 		scvsprintf(temp, 256, s, vl);
+#endif
 		va_end(vl);
 		compilererror = temp;
 		longjmp(_errorjmp,1);

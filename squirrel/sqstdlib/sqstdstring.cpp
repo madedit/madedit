@@ -136,9 +136,15 @@ static SQInteger _string_format(HSQUIRRELVM v)
 			allocated += addlen;
 			dest = sq_getscratchpad(v,allocated);
 			switch(valtype) {
+#if !defined(__GNUC__) || defined(__MINGW32__)
+			case 's': i += scsprintf(&dest[i],fmt,ts); break;
+			case 'i': i += scsprintf(&dest[i],fmt,ti); break;
+			case 'f': i += scsprintf(&dest[i],fmt,tf); break;
+#else
 			case 's': i += scsprintf(&dest[i],addlen,fmt,ts); break;
 			case 'i': i += scsprintf(&dest[i],addlen,fmt,ti); break;
 			case 'f': i += scsprintf(&dest[i],addlen,fmt,tf); break;
+#endif
 			};
 			nparam ++;
 		}

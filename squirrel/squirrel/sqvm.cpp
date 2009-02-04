@@ -229,13 +229,25 @@ void SQVM::ToString(const SQObjectPtr &o,SQObjectPtr &res)
 		res = o;
 		return;
 	case OT_FLOAT:
+#if !defined(__GNUC__) || defined(__MINGW32__)
+		scsprintf(_sp(rsl(NUMBER_MAX_CHAR+1)),_SC("%g"),_float(o));
+#else
 		scsprintf(_sp(rsl(NUMBER_MAX_CHAR+1)),NUMBER_MAX_CHAR+1,_SC("%g"),_float(o));
+#endif
 		break;
 	case OT_INTEGER:
+#if !defined(__GNUC__) || defined(__MINGW32__)
+		scsprintf(_sp(rsl(NUMBER_MAX_CHAR+1)),_SC("%d"),_integer(o));
+#else
 		scsprintf(_sp(rsl(NUMBER_MAX_CHAR+1)),NUMBER_MAX_CHAR+1,_SC("%d"),_integer(o));
+#endif
 		break;
 	case OT_BOOL:
+#if !defined(__GNUC__) || defined(__MINGW32__)
+		scsprintf(_sp(rsl(6)),_integer(o)?_SC("true"):_SC("false"));
+#else
 		scsprintf(_sp(rsl(6)),6,_integer(o)?_SC("true"):_SC("false"));
+#endif
 		break;
 	case OT_TABLE:
 	case OT_USERDATA:
@@ -249,7 +261,11 @@ void SQVM::ToString(const SQObjectPtr &o,SQObjectPtr &res)
 			}
 		}
 	default:
+#if !defined(__GNUC__) || defined(__MINGW32__)
+		scsprintf(_sp(rsl(sizeof(void*)+20)),_SC("(%s : 0x%p)"),GetTypeName(o),(void*)_rawval(o));
+#else
 		scsprintf(_sp(rsl(sizeof(void*)+20)),sizeof(void*)+20,_SC("(%s : 0x%p)"),GetTypeName(o),(void*)_rawval(o));
+#endif
 	}
 	res = SQString::Create(_ss(this),_spval);
 }

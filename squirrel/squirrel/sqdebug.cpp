@@ -42,8 +42,12 @@ void SQVM::Raise_Error(const SQChar *s, ...)
 {
 	va_list vl;
 	va_start(vl, s);
-    SQInteger len = (SQInteger)scstrlen(s)+(NUMBER_MAX_CHAR*2);
+	SQInteger len = (SQInteger)scstrlen(s)+(NUMBER_MAX_CHAR*2);
+#if !defined(__GNUC__) || defined(__MINGW32__)
+	scvsprintf(_sp(rsl(len)), s, vl);
+#else
 	scvsprintf(_sp(rsl(len)), len, s, vl);
+#endif
 	va_end(vl);
 	_lasterror = SQString::Create(_ss(this),_spval,-1);
 }
@@ -58,11 +62,19 @@ SQString *SQVM::PrintObjVal(const SQObject &o)
 	switch(type(o)) {
 	case OT_STRING: return _string(o);
 	case OT_INTEGER:
+#if !defined(__GNUC__) || defined(__MINGW32__)
+		scsprintf(_sp(rsl(NUMBER_MAX_CHAR+1)), _SC("%d"), _integer(o));
+#else
 		scsprintf(_sp(rsl(NUMBER_MAX_CHAR+1)), NUMBER_MAX_CHAR+1, _SC("%d"), _integer(o));
+#endif
 		return SQString::Create(_ss(this), _spval);
 		break;
 	case OT_FLOAT:
+#if !defined(__GNUC__) || defined(__MINGW32__)
+		scsprintf(_sp(rsl(NUMBER_MAX_CHAR+1)), _SC("%.14g"), _float(o));
+#else
 		scsprintf(_sp(rsl(NUMBER_MAX_CHAR+1)), NUMBER_MAX_CHAR+1, _SC("%.14g"), _float(o));
+#endif
 		return SQString::Create(_ss(this), _spval);
 		break;
 	default:
