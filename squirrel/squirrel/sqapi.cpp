@@ -39,10 +39,10 @@ SQInteger sq_aux_throwobject(HSQUIRRELVM v,SQObjectPtr &e)
 
 SQInteger sq_aux_invalidtype(HSQUIRRELVM v,SQObjectType type)
 {
-#if !defined(__GNUC__) || defined(__MINGW32__)
-	scsprintf(_ss(v)->GetScratchPad(100), _SC("unexpected type %s"), IdType2Name(type));
-#else
+#if defined(SQUNICODE) && defined(__GNUC__) && !defined(__MINGW32__)
 	scsprintf(_ss(v)->GetScratchPad(100), 100, _SC("unexpected type %s"), IdType2Name(type));
+#else
+	scsprintf(_ss(v)->GetScratchPad(100), _SC("unexpected type %s"), IdType2Name(type));
 #endif
 	return sq_throwerror(v, _ss(v)->GetScratchPad(-1));
 }

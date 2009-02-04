@@ -65,10 +65,10 @@ public:
 		static SQChar temp[256];
 		va_list vl;
 		va_start(vl, s);
-#if !defined(__GNUC__) || defined(__MINGW32__)
-		scvsprintf(temp, s, vl);
-#else
+#if defined(SQUNICODE) && defined(__GNUC__) && !defined(__MINGW32__)
 		scvsprintf(temp, 256, s, vl);
+#else
+		scvsprintf(temp, s, vl);
 #endif
 		va_end(vl);
 		compilererror = temp;
