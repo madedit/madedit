@@ -137,6 +137,20 @@ namespace Sqrat {
 			}
 		}
 
+		Object GetSlot(SQInteger idx) const {
+			HSQOBJECT slotObj;
+			sq_pushobject(vm, GetObject());
+			sq_pushinteger(vm, idx);
+			if(SQ_FAILED(sq_get(vm, -2))) {
+				sq_pop(vm, 1);
+				return Object(vm); // Return a NULL object
+			} else {
+				sq_getstackobj(vm, -1, &slotObj);
+				sq_pop(vm, 2);
+				return Object(slotObj, vm);
+			}
+		}
+
 		template <class T>
 		T Cast() const {
 			sq_pushobject(vm, GetObject());
