@@ -41,28 +41,34 @@ namespace Sqrat {
 		Script(HSQUIRRELVM v = DefaultVM::Get()) : Object(v, false) {
 		}
 
-		void CompileString(const string& script) {
+		bool CompileString(const string& script, string& errMsg) {
 			if(SQ_FAILED(sq_compilebuffer(vm, script.c_str(), static_cast<SQInteger>(script.size() * sizeof(SQChar)), _SC(""), true))) {
-				throw Exception(LastErrorString(vm));
+				errMsg = LastErrorString(vm);
+				return false;
 			}
 			sq_getstackobj(vm,-1,&obj);
+			return true;
 		}
 
-		void CompileFile(const string& path) {
+		bool CompileFile(const string& path, string& errMsg) {
 			if(SQ_FAILED(sqstd_loadfile(vm, path.c_str(), true))) {
-				throw Exception(LastErrorString(vm));
+				errMsg = LastErrorString(vm);
+				return false;
 			}
 			sq_getstackobj(vm,-1,&obj);
+			return true;
 		}
 
-		void Run() {
+		bool Run(string& errMsg) {
 			if(!sq_isnull(obj)) {
 				sq_pushobject(vm, obj);
 				sq_pushroottable(vm);
 				if(SQ_FAILED(sq_call(vm, 1, false, true))) {
-					throw Exception(LastErrorString(vm));
+					errMsg = LastErrorString(vm);
+					return false;
 				}
 			}
+			return true;
 		}
 
 		void WriteCompiledFile(const string& path) {
