@@ -44,7 +44,7 @@ void SQLexer::Init(SQSharedState *ss, SQLEXREADFUNC rg, SQUserPointer up,Compile
 	ADD_KEYWORD(foreach, TK_FOREACH);
 	ADD_KEYWORD(in, TK_IN);
 	ADD_KEYWORD(typeof, TK_TYPEOF);
-	ADD_KEYWORD(delegate, TK_DELEGATE);
+	ADD_KEYWORD(base, TK_BASE);
 	ADD_KEYWORD(delete, TK_DELETE);
 	ADD_KEYWORD(try, TK_TRY);
 	ADD_KEYWORD(catch, TK_CATCH);
@@ -56,13 +56,10 @@ void SQLexer::Init(SQSharedState *ss, SQLEXREADFUNC rg, SQUserPointer up,Compile
 	ADD_KEYWORD(case, TK_CASE);
 	ADD_KEYWORD(default, TK_DEFAULT);
 	ADD_KEYWORD(this, TK_THIS);
-	ADD_KEYWORD(parent,TK_PARENT);
 	ADD_KEYWORD(class,TK_CLASS);
 	ADD_KEYWORD(extends,TK_EXTENDS);
 	ADD_KEYWORD(constructor,TK_CONSTRUCTOR);
 	ADD_KEYWORD(instanceof,TK_INSTANCEOF);
-	ADD_KEYWORD(vargc,TK_VARGC);
-	ADD_KEYWORD(vargv,TK_VARGV);
 	ADD_KEYWORD(true,TK_TRUE);
 	ADD_KEYWORD(false,TK_FALSE);
 	ADD_KEYWORD(static,TK_STATIC);
@@ -158,12 +155,20 @@ SQInteger SQLexer::Lex()
 			else { NEXT(); RETURN_TOKEN(TK_EQ); }
 		case _SC('<'):
 			NEXT();
-			if ( CUR_CHAR == _SC('=') ) { NEXT(); RETURN_TOKEN(TK_LE) }
-			else if ( CUR_CHAR == _SC('-') ) { NEXT(); RETURN_TOKEN(TK_NEWSLOT); }
-			else if ( CUR_CHAR == _SC('<') ) { NEXT(); RETURN_TOKEN(TK_SHIFTL); }
-			else if ( CUR_CHAR == _SC('/') ) { NEXT(); RETURN_TOKEN(TK_ATTR_OPEN); }
-			//else if ( CUR_CHAR == _SC('[') ) { NEXT(); ReadMultilineString(); RETURN_TOKEN(TK_STRING_LITERAL); }
-			else { RETURN_TOKEN('<') }
+			switch(CUR_CHAR) {
+			case _SC('='):
+				NEXT(); 
+				if(CUR_CHAR == _SC('>')) {
+					NEXT();
+					RETURN_TOKEN(TK_3WAYSCMP); 
+				}
+				RETURN_TOKEN(TK_LE) 
+				break;
+			case _SC('-'): NEXT(); RETURN_TOKEN(TK_NEWSLOT); break;
+			case _SC('<'): NEXT(); RETURN_TOKEN(TK_SHIFTL); break;
+			case _SC('/'): NEXT(); RETURN_TOKEN(TK_ATTR_OPEN); break;
+			}
+			RETURN_TOKEN('<');
 		case _SC('>'):
 			NEXT();
 			if (CUR_CHAR == _SC('=')){ NEXT(); RETURN_TOKEN(TK_GE);}
@@ -182,9 +187,10 @@ SQInteger SQLexer::Lex()
 			else { NEXT(); RETURN_TOKEN(TK_NE); }
 		case _SC('@'): {
 			SQInteger stype;
-			NEXT(); 
-			if(CUR_CHAR != _SC('"'))
-				Error(_SC("string expected"));
+			NEXT();
+			if(CUR_CHAR != _SC('"')) {
+				RETURN_TOKEN('@');
+			}
 			if((stype=ReadString('"',true))!=-1) {
 				RETURN_TOKEN(stype);
 			}

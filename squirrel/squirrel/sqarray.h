@@ -18,6 +18,7 @@ public:
 	}
 #ifndef NO_GARBAGE_COLLECTOR
 	void Mark(SQCollectable **chain);
+	SQObjectType GetType() {return OT_ARRAY;}
 #endif
 	void Finalize(){
 		_values.resize(0);
@@ -82,6 +83,7 @@ public:
 	{
 		sq_delete(this,SQArray);
 	}
+	
 	SQObjectPtrVec _values;
 };
 #endif //_SQARRAY_H_

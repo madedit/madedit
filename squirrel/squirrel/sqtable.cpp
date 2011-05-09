@@ -23,7 +23,8 @@ void SQTable::Remove(const SQObjectPtr &key)
 	
 	_HashNode *n = _Get(key, HashObj(key) & (_numofnodes - 1));
 	if (n) {
-		n->val = n->key = _null_;
+		n->val.Null();
+		n->key.Null();
 		_usednodes--;
 		Rehash(false);
 	}
@@ -33,8 +34,9 @@ void SQTable::AllocNodes(SQInteger nSize)
 {
 	_HashNode *nodes=(_HashNode *)SQ_MALLOC(sizeof(_HashNode)*nSize);
 	for(SQInteger i=0;i<nSize;i++){
-		new (&nodes[i]) _HashNode;
-		nodes[i].next=NULL;
+		_HashNode &n = nodes[i];
+		new (&n) _HashNode;
+		n.next=NULL;
 	}
 	_numofnodes=nSize;
 	_nodes=nodes;
@@ -122,8 +124,8 @@ bool SQTable::NewSlot(const SQObjectPtr &key,const SQObjectPtr &val)
 			n->key = mp->key;
 			n->val = mp->val;/* copy colliding node into free pos. (mp->next also goes) */
 			n->next = mp->next;
-			mp->key = _null_;
-			mp->val = _null_;
+			mp->key.Null();
+			mp->val.Null();
 			mp->next = NULL;  /* now `mp' is free */
 		}
 		else{
@@ -179,7 +181,7 @@ bool SQTable::Set(const SQObjectPtr &key, const SQObjectPtr &val)
 
 void SQTable::_ClearNodes()
 {
-	for(SQInteger i = 0;i < _numofnodes; i++) { _nodes[i].key = _null_; _nodes[i].val = _null_; }
+	for(SQInteger i = 0;i < _numofnodes; i++) { _HashNode &n = _nodes[i]; n.key.Null(); n.val.Null(); }
 }
 
 void SQTable::Finalize()

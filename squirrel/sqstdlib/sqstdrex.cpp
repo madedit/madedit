@@ -181,7 +181,7 @@ static SQInteger sqstd_rex_class(SQRex *exp)
 			SQInteger r;
 			if(*exp->_p++ == ']') sqstd_rex_error(exp,_SC("unfinished range"));
 			r = sqstd_rex_newnode(exp,OP_RANGE);
-			if(first>*exp->_p) sqstd_rex_error(exp,_SC("invalid range"));
+			if(exp->_nodes[first].type>*exp->_p) sqstd_rex_error(exp,_SC("invalid range"));
 			if(exp->_nodes[first].type == OP_CCLASS) sqstd_rex_error(exp,_SC("cannot use character classes in ranges"));
 			exp->_nodes[r].left = exp->_nodes[first].type;
 			SQInteger t = sqstd_rex_escapechar(exp);
@@ -461,7 +461,7 @@ static const SQChar *sqstd_rex_matchnode(SQRex* exp,SQRexNode *node,const SQChar
 				exp->_matches[capture].begin = cur;
 				exp->_currsubexp++;
 			}
-			
+			int tempcap = exp->_currsubexp;
 			do {
 				SQRexNode *subnext = NULL;
 				if(n->next != -1) {
@@ -478,12 +478,13 @@ static const SQChar *sqstd_rex_matchnode(SQRex* exp,SQRexNode *node,const SQChar
 				}
 			} while((n->next != -1) && (n = &exp->_nodes[n->next]));
 
+			exp->_currsubexp = tempcap;
 			if(capture != -1) 
 				exp->_matches[capture].len = cur - exp->_matches[capture].begin;
 			return cur;
 	}				 
 	case OP_WB:
-		if(str == exp->_bol && !isspace(*str)
+		if((str == exp->_bol && !isspace(*str))
 		 || (str == exp->_eol && !isspace(*(str-1)))
 		 || (!isspace(*str) && isspace(*(str+1)))
 		 || (isspace(*str) && !isspace(*(str+1))) ) {

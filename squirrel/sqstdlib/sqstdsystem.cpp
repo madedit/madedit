@@ -122,7 +122,7 @@ static SQInteger _system_date(HSQUIRRELVM v)
 static SQRegFunction systemlib_funcs[]={
 	_DECL_FUNC(getenv,2,_SC(".s")),
 	_DECL_FUNC(system,2,_SC(".s")),
-	_DECL_FUNC(clock,1,NULL),
+	_DECL_FUNC(clock,0,NULL),
 	_DECL_FUNC(time,1,NULL),
 	_DECL_FUNC(date,-1,_SC(".nn")),
 	_DECL_FUNC(remove,2,_SC(".s")),

@@ -1,35 +1,96 @@
-***version 2.2.4 stable***
--fixed bug in functions with default parameters
+***version 3.0 stable***
+-added sq_getcallee()
+-sq_getfreevariable() also works for native closures
+-minior optimizations
+-removed several warning when compiling with GCC 4.x
+-fixed some errors in the documentation
+-fixed bug when using SQUSEDOUBLE and 32bits intengers
+-fixed bug when invoking fenerators with closure.call() (thx huntercool)
 
-***2009-06-30          ***
-***version 2.2.3 stable***
+***2010-12-19					        ***
+***version 3.0 release candidate 1(RC 1)***
+-improved metamethods error handling
+-added parameter 'isstatic' to _newmember metamethod(thx G.Meyer)
+-added sq_getrefcount() to return number of refences from C++(thx G.Meyer)
+
+***2010-11-07        ***
+***version 3.0 beta 3***
+-license changed to "MIT license"
+-added sq_resurrectunreachable() and resurrectunreachable()
+-added callee() built in function, returns the current running closure
+-added thread.getstackinfos()
+-added sq_objtouserpointer()
+-added sq_newtableex()
+-various refactoring and optimizations
+-fixed several 64bits issues regarding integer to string conversions
+-fixed some bugs when SQUSEDOUBLE is used in 32bits systems
+
+***2010-08-18          ***
+***version 3.0 beta 2.1***
+-fixed bug in class constructor
+-fixed bug in compound arith
+
+***2010-08-12        ***
+***version 3.0 beta 2***
+-class methods can be added or replaced after the class as been instantiated
+-JSON compliant table syntax, this is currently an experimental feature (thx atai)
+-sq_getsize() now returns userdatasize for classes and instances
+-now setroottable() and setconsttable() return the previous value of the respective table
+-fixed bug in compound arith operators when used on a free variable (thx ellon)
+-fixed some x64 minor bugs
+-fixed minor bug in the compiler
+-refactored some VM internals
+-documented sq_getmemberhandle, sq_getbyhandle, sq_setbyhandle to set and get value from classes
+
+***2009-11-15        ***
+***version 3.0 beta 1***
+-various refactoring and optimizations
+-fixed bug in free variables (thx mokehehe)
+-fixed bug in functions with default parameters (thx ara & Yexo)
+-fixed bug in exception handling
+-improved error propagation in _set and _get metamethods ( and 'throw null' for clean failure)
+-added sq_getmemberhandle, sq_getbyhandle, sq_setbyhandle to set and get value from classes
+
+***2009-06-30         ***
+***version 3.0 alpha 2***
+-added real free variables(thx Paul Ruizendaal)
+-added refactored function call implementation and compiler(thx Paul Ruizendaal)
 -added sq_getfunctioninfo
 -added compile time flag SQUSEDOUBLE to use double precision floats
 -added global slot _floatsize_ int the base lib to recognize single precision and double precision builds
 -sq_wakeupvm can now resume the vm with an exception
 -added sqstd_format
+-now blobs can be cloned
 -generators can now be instantiated by calling sq_call() or closure.call()
--fixed a bug in sqstd_printcallstack(thx takayuki_h)
--fixed modulo by zero(thx jup)
--fixed negative enums and constants
--fixed generator crash bug if invoked as tail call (thx Mr.Accident)
--fixed some minor bug
+-fixed debughook bug
+-fixed cooroutine error propagation
 
-***2008-09-24          ***
-***version 2.2.2 stable***
--fixed some behaviour inconsistencies in thread.call() and thread.wakeup() (thx Mr.Accident)
--fixed coroutine error propagation
--fixed lingering return value from native function (thx Tom Leonard)
--fixed a bug if array.sort() is given a bad sort function (thx Tom Leonard)
--fixed some minor api bug
+***2008-07-23         ***
+***version 3.0 alpha 1***
+-first banch from 2.x source tree
+-added 'base' keyword
+-removed 'delegate' keyword
+-now compiled scripts are vararg functions
+-added setdelegate() and getdelegate() table builtin methods
+-added <=> 3 ways compare operator
+-added lambda expression @(a,b) a + b
+-added local function statement
+-added array built-in map(),reduce(),apply(),filter() and find()
+-generators hold only a weak reference of the enviroment object
+-removed 'vargv' and 'vargc' keywords
+-now var args are passed as an array called vargv(as a paramter)
+-removed 'parent' keyword
+-added class getbase() built in method
+-instanceof doesn't throw an exception if the left expression is not a class
+-lexical scoping for free variables(free variables are no longer in the second parameter list)
+-sq_setprintfunc accept error func
+-sq_geterrorfunc()
 -added sq_arrayremove() and sq_arrayinsert()
+-error() built in function(works like print but prints using the errorfunc)
+-added native debug hook
 
-***2008-05-16          ***
-***version 2.2.1 stable***
--fixed a tailcall bug
-
-***2008-02-17          ***
-***version 2.2 stable  ***
+***2008-02-17        ***
+***version 2.2 stable***
 -added _newslot metamethod in classes
 -added enums added constants
 -added sq_pushconsttable, sq_setconsttable
@@ -168,7 +229,7 @@ will terminate the iteration but will not be returned as foreach iteration
 ***2004-11-01        ***
 ***version 1.0 stable***
 -fixed some minor bug
--improoved operator 'delete' performances
+-improved operator 'delete' performances
 -added scientific notation for float numbers( eg. 2.e16 or 2.e-2)
 
 ***2004-08-30        ***
@@ -272,7 +333,7 @@ will terminate the iteration but will not be returned as foreach iteration
 -fixed a garbage collection bug
 -fixed == operator now can compare correctly different types
 -new built in method getstackinfos(level)
--improoved line informations precision for the debug hook
+-improved line informations precision for the debug hook
 -new api call sq_compilebuffer()
 -new built-in api function compilestring()
 -new syntactic sugar for function declarations inside tables

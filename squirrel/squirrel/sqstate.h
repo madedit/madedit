@@ -9,10 +9,10 @@ struct SQTable;
 //max number of character for a printed number
 #define NUMBER_MAX_CHAR 50
 
-struct StringTable
+struct SQStringTable
 {
-	StringTable();
-	~StringTable();
+	SQStringTable(SQSharedState*ss);
+	~SQStringTable();
 	SQString *Add(const SQChar *,SQInteger len);
 	void Remove(SQString *);
 private:
@@ -21,6 +21,7 @@ private:
 	SQString **_strings;
 	SQUnsignedInteger _numofslots;
 	SQUnsignedInteger _slotused;
+	SQSharedState *_sharedstate;
 };
 
 struct RefTable {
@@ -33,6 +34,7 @@ struct RefTable {
 	~RefTable();
 	void AddRef(SQObject &obj);
 	SQBool Release(SQObject &obj);
+	SQUnsignedInteger GetRefCount(SQObject &obj);
 #ifndef NO_GARBAGE_COLLECTOR
 	void Mark(SQCollectable **chain);
 #endif
@@ -63,14 +65,16 @@ public:
 	SQChar* GetScratchPad(SQInteger size);
 	SQInteger GetMetaMethodIdxByName(const SQObjectPtr &name);
 #ifndef NO_GARBAGE_COLLECTOR
-	SQInteger CollectGarbage(SQVM *vm); 
+	SQInteger CollectGarbage(SQVM *vm);
+	void RunMark(SQVM *vm,SQCollectable **tchain);
+	SQInteger ResurrectUnreachable(SQVM *vm);
 	static void MarkObject(SQObjectPtr &o,SQCollectable **chain);
 #endif
 	SQObjectPtrVec *_metamethods;
 	SQObjectPtr _metamethodsmap;
 	SQObjectPtrVec *_systemstrings;
 	SQObjectPtrVec *_types;
-	StringTable *_stringtable;
+	SQStringTable *_stringtable;
 	RefTable _refs_table;
 	SQObjectPtr _registry;
 	SQObjectPtr _consts;
@@ -102,6 +106,7 @@ public:
 	
 	SQCOMPILERERROR _compilererrorhandler;
 	SQPRINTFUNCTION _printfunc;
+	SQPRINTFUNCTION _errorfunc;
 	bool _debuginfo;
 	bool _notifyallexceptions;
 private:
@@ -130,10 +135,10 @@ private:
 #endif
 
 extern SQObjectPtr _null_;
-extern SQObjectPtr _true_;
-extern SQObjectPtr _false_;
-extern SQObjectPtr _one_;
-extern SQObjectPtr _minusone_;
+//extern SQObjectPtr _true_;
+//extern SQObjectPtr _false_;
+//extern SQObjectPtr _one_;
+//extern SQObjectPtr _minusone_;
 
 bool CompileTypemask(SQIntVec &res,const SQChar *typemask);
 

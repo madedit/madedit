@@ -233,6 +233,11 @@ SQInteger _stream_eos(HSQUIRRELVM v)
 	return 1;
 }
 
+ SQInteger _stream__cloned(HSQUIRRELVM v)
+ {
+	 return sq_throwerror(v,_SC("this object cannot be cloned"));
+ }
+
 static SQRegFunction _stream_methods[] = {
 	_DECL_STREAM_FUNC(readblob,2,_SC("xn")),
 	_DECL_STREAM_FUNC(readn,2,_SC("xn")),
@@ -243,6 +248,7 @@ static SQRegFunction _stream_methods[] = {
 	_DECL_STREAM_FUNC(len,1,_SC("x")),
 	_DECL_STREAM_FUNC(eos,1,_SC("x")),
 	_DECL_STREAM_FUNC(flush,1,_SC("x")),
+	_DECL_STREAM_FUNC(_cloned,0,NULL),
 	{0,0}
 };
 
@@ -277,7 +283,7 @@ void init_streamclass(HSQUIRRELVM v)
 	sq_pop(v,1);
 }
 
-SQRESULT declare_stream(HSQUIRRELVM v,SQChar* name,SQUserPointer typetag,const SQChar* reg_name,SQRegFunction *methods,SQRegFunction *globals)
+SQRESULT declare_stream(HSQUIRRELVM v,const SQChar* name,SQUserPointer typetag,const SQChar* reg_name,SQRegFunction *methods,SQRegFunction *globals)
 {
 	if(sq_gettype(v,-1) != OT_TABLE)
 		return sq_throwerror(v,_SC("table expected"));

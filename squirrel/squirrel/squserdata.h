@@ -21,6 +21,7 @@ struct SQUserData : SQDelegable
 #ifndef NO_GARBAGE_COLLECTOR
 	void Mark(SQCollectable **chain);
 	void Finalize(){SetDelegate(NULL);}
+	SQObjectType GetType(){ return OT_USERDATA;}
 #endif
 	void Release() {
 		if (_hook) _hook(_val,_size);
@@ -28,6 +29,7 @@ struct SQUserData : SQDelegable
 		this->~SQUserData();
 		SQ_FREE(this, sizeof(SQUserData) + tsize);
 	}
+	
 		
 	SQInteger _size;
 	SQRELEASEHOOK _hook;
