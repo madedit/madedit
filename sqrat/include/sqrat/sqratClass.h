@@ -56,8 +56,8 @@ namespace Sqrat {
 		*/
 		/// Constructor
 		Class(HSQUIRRELVM v = DefaultVM::Get(), bool createClass = true) : Object(v, false) {
-			if(createClass && !ClassType<C>::Initialized()) {
-				HSQOBJECT& classObj = ClassType<C>::ClassObject();
+			if(createClass && !ClassType<C>::Initialized(v)) {
+				HSQOBJECT& classObj = ClassType<C>::ClassObject(v);
 				sq_resetobject(&classObj);
 
 				sq_newclass(vm, false);
@@ -66,18 +66,18 @@ namespace Sqrat {
 				sq_pop(vm, 1);
 
 				InitClass();
-				ClassType<C>::Initialized() = true;
+				ClassType<C>::Initialized(v) = true;
 			}
 		}
 
 		/// Get the Squirrel Object for this Class (const)
 		virtual HSQOBJECT GetObject() const {
-			return ClassType<C>::ClassObject();
+			return ClassType<C>::ClassObject(vm);
 		}
 
 		/// Get the Squirrel Object for this Class (ref)
 		virtual HSQOBJECT& GetObject() {
-			return ClassType<C>::ClassObject();
+			return ClassType<C>::ClassObject(vm);
 		}
 
 	public:
@@ -115,10 +115,10 @@ namespace Sqrat {
 		template<class V>
 		Class& Var(const SQChar* name, V C::* var) {
 			// Add the getter
-			BindAccessor(name, &var, sizeof(var), &sqDefaultGet<C, V>, ClassType<C>::GetTable());
+			BindAccessor(name, &var, sizeof(var), &sqDefaultGet<C, V>, ClassType<C>::GetTable(vm));
 
 			// Add the setter
-			BindAccessor(name, &var, sizeof(var), &sqDefaultSet<C, V>, ClassType<C>::SetTable());
+			BindAccessor(name, &var, sizeof(var), &sqDefaultSet<C, V>, ClassType<C>::SetTable(vm));
 
 			return *this;
 		}
@@ -128,12 +128,12 @@ namespace Sqrat {
 		Class& Prop(const SQChar* name, V (C::*getMethod)() const, void (C::*setMethod)(const V&)) {
 			if(getMethod != NULL) {
 				// Add the getter
-				BindAccessor(name, &getMethod, sizeof(getMethod), SqMemberFunc(getMethod), ClassType<C>::GetTable());
+				BindAccessor(name, &getMethod, sizeof(getMethod), SqMemberFunc(getMethod), ClassType<C>::GetTable(vm));
 			}
 			
 			if(setMethod != NULL) {
 				// Add the setter
-				BindAccessor(name, &setMethod, sizeof(setMethod), SqMemberFunc(setMethod), ClassType<C>::SetTable());
+				BindAccessor(name, &setMethod, sizeof(setMethod), SqMemberFunc(setMethod), ClassType<C>::SetTable(vm));
 			}
 
 			return *this;
@@ -144,12 +144,12 @@ namespace Sqrat {
 		Class& Prop(const SQChar* name, V (C::*getMethod)(), void (C::*setMethod)(V)) {
 			if(getMethod != NULL) {
 				// Add the getter
-				BindAccessor(name, &getMethod, sizeof(getMethod), SqMemberFunc(getMethod), ClassType<C>::GetTable());
+				BindAccessor(name, &getMethod, sizeof(getMethod), SqMemberFunc(getMethod), ClassType<C>::GetTable(vm));
 			}
 			
 			if(setMethod != NULL) {
 				// Add the setter
-				BindAccessor(name, &setMethod, sizeof(setMethod), SqMemberFunc(setMethod), ClassType<C>::SetTable());
+				BindAccessor(name, &setMethod, sizeof(setMethod), SqMemberFunc(setMethod), ClassType<C>::SetTable(vm));
 			}
 
 			return *this;
@@ -159,7 +159,7 @@ namespace Sqrat {
 		template<class V>
 		Class& Prop(const SQChar* name, V (C::*getMethod)() const) {
 			// Add the getter
-			BindAccessor(name, &getMethod, sizeof(getMethod), SqMemberFunc(getMethod), ClassType<C>::GetTable());
+			BindAccessor(name, &getMethod, sizeof(getMethod), SqMemberFunc(getMethod), ClassType<C>::GetTable(vm));
 
 			return *this;
 		}
@@ -168,7 +168,7 @@ namespace Sqrat {
 		template<class V>
 		Class& Prop(const SQChar* name, V (C::*getMethod)()) {
 			// Add the getter
-			BindAccessor(name, &getMethod, sizeof(getMethod), SqMemberFunc(getMethod), ClassType<C>::GetTable());
+			BindAccessor(name, &getMethod, sizeof(getMethod), SqMemberFunc(getMethod), ClassType<C>::GetTable(vm));
 
 			return *this;
 		}
@@ -205,7 +205,7 @@ namespace Sqrat {
 
 		template<class F>
 		Class& SquirrelFunc(const SQChar* name, SQFUNCTION func) {
-			sq_pushobject(vm, ClassType<C>::ClassObject());
+			sq_pushobject(vm, ClassType<C>::ClassObject(vm));
 			sq_pushstring(vm, name, -1);
 			sq_newclosure(vm, func, 0);
 			sq_newslot(vm, -3, false);
@@ -220,7 +220,7 @@ namespace Sqrat {
 
 		Function GetFunction(const SQChar* name) {
 			HSQOBJECT funcObj;
-			sq_pushobject(vm, ClassType<C>::ClassObject());
+			sq_pushobject(vm, ClassType<C>::ClassObject(vm));
 			sq_pushstring(vm, name, -1);
 			if(SQ_FAILED(sq_get(vm, -2))) {
 				sq_pushnull(vm);
@@ -228,7 +228,7 @@ namespace Sqrat {
 			sq_getstackobj(vm, -1, &funcObj);
 			sq_pop(vm, 2);
 
-			return Function(vm, ClassType<C>::ClassObject(), funcObj);
+			return Function(vm, ClassType<C>::ClassObject(vm), funcObj);
 		}
 
 	protected:
@@ -239,10 +239,10 @@ namespace Sqrat {
 
 		// Initialize the required data structure for the class
 		void InitClass() {
-			ClassType<C>::CopyFunc() = &A::Copy;
+			ClassType<C>::CopyFunc(vm) = &A::Copy;
 
 			// push the class
-			sq_pushobject(vm, ClassType<C>::ClassObject());
+			sq_pushobject(vm, ClassType<C>::ClassObject(vm));
 
 			// add the default constructor
 			sq_pushstring(vm,_SC("constructor"), -1);
@@ -250,7 +250,7 @@ namespace Sqrat {
 			sq_newslot(vm, -3, false);
 
 			// add the set table (static)
-			HSQOBJECT& setTable = ClassType<C>::SetTable();
+			HSQOBJECT& setTable = ClassType<C>::SetTable(vm);
 			sq_resetobject(&setTable);
 			sq_pushstring(vm,_SC("__setTable"), -1);
 			sq_newtable(vm);
@@ -259,7 +259,7 @@ namespace Sqrat {
 			sq_newslot(vm, -3, true);
 
 			// add the get table (static)
-			HSQOBJECT& getTable = ClassType<C>::GetTable();
+			HSQOBJECT& getTable = ClassType<C>::GetTable(vm);
 			sq_resetobject(&getTable);
 			sq_pushstring(vm,_SC("__getTable"), -1);
 			sq_newtable(vm);
@@ -328,27 +328,27 @@ namespace Sqrat {
 	class DerivedClass : public Class<C, A> {
 	public:
 		DerivedClass(HSQUIRRELVM v = DefaultVM::Get()) : Class<C, A>(v, false) {
-			if(!ClassType<C>::Initialized()) {
-				HSQOBJECT& classObj = ClassType<C>::ClassObject();
+			if(!ClassType<C>::Initialized(v)) {
+				HSQOBJECT& classObj = ClassType<C>::ClassObject(v);
 				sq_resetobject(&classObj);
 
-				sq_pushobject(v, ClassType<B>::ClassObject());
+				sq_pushobject(v, ClassType<B>::ClassObject(v));
 				sq_newclass(v, true);
 				sq_getstackobj(v, -1, &classObj);
 				sq_addref(vm, &classObj); // must addref before the pop!
 				sq_pop(vm, 1);
 
 				InitDerivedClass(v);
-				ClassType<C>::Initialized() = true;
+				ClassType<C>::Initialized(v) = true;
 			}
 		}
 
 	protected:
 		void InitDerivedClass(HSQUIRRELVM vm) {
-			ClassType<C>::CopyFunc() = &A::Copy;
+			ClassType<C>::CopyFunc(vm) = &A::Copy;
 
 			// push the class
-			sq_pushobject(vm, ClassType<C>::ClassObject());
+			sq_pushobject(vm, ClassType<C>::ClassObject(vm));
 
 			// add the default constructor
 			sq_pushstring(vm,_SC("constructor"), -1);
@@ -356,9 +356,9 @@ namespace Sqrat {
 			sq_newslot(vm, -3, false);
 
 			// clone the base classes set table (static)
-			HSQOBJECT& setTable = ClassType<C>::SetTable();
+			HSQOBJECT& setTable = ClassType<C>::SetTable(vm);
 			sq_resetobject(&setTable);
-			sq_pushobject(vm, ClassType<B>::SetTable());
+			sq_pushobject(vm, ClassType<B>::SetTable(vm));
 			sq_pushstring(vm,_SC("__setTable"), -1);
 			sq_clone(vm, -2);
 			sq_remove(vm, -3);
@@ -367,9 +367,9 @@ namespace Sqrat {
 			sq_newslot(vm, -3, true);
 
 			// clone the base classes get table (static)
-			HSQOBJECT& getTable = ClassType<C>::GetTable();
+			HSQOBJECT& getTable = ClassType<C>::GetTable(vm);
 			sq_resetobject(&getTable);
-			sq_pushobject(vm, ClassType<B>::GetTable());
+			sq_pushobject(vm, ClassType<B>::GetTable(vm));
 			sq_pushstring(vm,_SC("__getTable"), -1);
 			sq_clone(vm, -2);
 			sq_remove(vm, -3);

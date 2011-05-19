@@ -29,6 +29,7 @@
 #define _SCRAT_CLASSTYPE_H_
 
 #include <squirrel.h>
+#include <map>
 
 namespace Sqrat {
 
@@ -36,51 +37,59 @@ namespace Sqrat {
 	// ClassType
 	//
 
+	// Get the Copy Function for this Class
+	typedef SQInteger (*COPYFUNC)(HSQUIRRELVM, SQInteger, const void*);
+
+	struct ClassTypeData
+	{
+		bool		initialized;
+		HSQOBJECT	classObj;
+		HSQOBJECT	getTable;
+		HSQOBJECT	setTable;
+		COPYFUNC	copyFunc;
+		ClassTypeData(): initialized(false) {}
+	};
+
 	template<class C>
 	struct ClassType {
+
+		static std::map< HSQUIRRELVM, ClassTypeData > s_classTypeDataMap;
+
 		// Get the Squirrel Object for this Class
-		static inline HSQOBJECT& ClassObject() {
-			static HSQOBJECT classObj; 
-			return classObj;
+		static inline HSQOBJECT& ClassObject(HSQUIRRELVM vm) {
+			return s_classTypeDataMap[vm].classObj;
 		}
 
 		// Get the Get Table for this Class
-		static inline HSQOBJECT& GetTable() {
-			static HSQOBJECT getTable; 
-			return getTable;
+		static inline HSQOBJECT& GetTable(HSQUIRRELVM vm) {
+			return s_classTypeDataMap[vm].getTable;
 		}
 
 		// Get the Set Table for this Class
-		static inline HSQOBJECT& SetTable() {
-			static HSQOBJECT setTable; 
-			return setTable;
+		static inline HSQOBJECT& SetTable(HSQUIRRELVM vm) {
+			return s_classTypeDataMap[vm].setTable;
 		}
 
-		// Get the Copy Function for this Class
-		typedef SQInteger (*COPYFUNC)(HSQUIRRELVM, SQInteger, const void*);
-
-		static inline COPYFUNC& CopyFunc() {
-			static COPYFUNC copyFunc; 
-			return copyFunc;
+		static inline COPYFUNC& CopyFunc(HSQUIRRELVM vm) {
+			return s_classTypeDataMap[vm].copyFunc;
 		}
 
-		static inline bool& Initialized() {
-			static bool initialized = false;
-			return initialized;
+		static inline bool& Initialized(HSQUIRRELVM vm) {
+			return s_classTypeDataMap[vm].initialized;
 		}
 
 		static void PushInstance(HSQUIRRELVM vm, C* ptr) {
-			sq_pushobject(vm, ClassObject());
+			sq_pushobject(vm, ClassObject(vm));
 			sq_createinstance(vm, -1);
 			sq_remove(vm, -2);
 			sq_setinstanceup(vm, -1, ptr);
 		}
 
 		static void PushInstanceCopy(HSQUIRRELVM vm, C& value) {
-			sq_pushobject(vm, ClassObject());
+			sq_pushobject(vm, ClassObject(vm));
 			sq_createinstance(vm, -1);
 			sq_remove(vm, -2);
-			CopyFunc()(vm, -1, &value);
+			CopyFunc(vm)(vm, -1, &value);
 		}
 
 		static C* GetInstance(HSQUIRRELVM vm, SQInteger idx) {
@@ -89,7 +98,10 @@ namespace Sqrat {
 			return ptr;
 		}
 	};
-	
+
+	template<class C>
+	std::map< HSQUIRRELVM, ClassTypeData > ClassType<C>::s_classTypeDataMap;
+
 }
 
 #endif
