@@ -55,27 +55,39 @@ namespace Sqrat {
 
 		static std::map< HSQUIRRELVM, ClassTypeData > s_classTypeDataMap;
 
+		static inline ClassTypeData& getClassTypeData(HSQUIRRELVM vm)
+		{
+			//TODO: use mutex to lock s_classTypeDataMap in multithreaded environment
+			return s_classTypeDataMap[vm];
+		}
+
+		static inline bool hasClassTypeData(HSQUIRRELVM vm)
+		{
+			//TODO: use mutex to lock s_classTypeDataMap in multithreaded environment
+			return (s_classTypeDataMap.find(vm) != s_classTypeDataMap.end());
+		}
+
 		// Get the Squirrel Object for this Class
 		static inline HSQOBJECT& ClassObject(HSQUIRRELVM vm) {
-			return s_classTypeDataMap[vm].classObj;
+			return getClassTypeData(vm).classObj;
 		}
 
 		// Get the Get Table for this Class
 		static inline HSQOBJECT& GetTable(HSQUIRRELVM vm) {
-			return s_classTypeDataMap[vm].getTable;
+			return getClassTypeData(vm).getTable;
 		}
 
 		// Get the Set Table for this Class
 		static inline HSQOBJECT& SetTable(HSQUIRRELVM vm) {
-			return s_classTypeDataMap[vm].setTable;
+			return getClassTypeData(vm).setTable;
 		}
 
 		static inline COPYFUNC& CopyFunc(HSQUIRRELVM vm) {
-			return s_classTypeDataMap[vm].copyFunc;
+			return getClassTypeData(vm).copyFunc;
 		}
 
 		static inline bool& Initialized(HSQUIRRELVM vm) {
-			return s_classTypeDataMap[vm].initialized;
+			return getClassTypeData(vm).initialized;
 		}
 
 		static void PushInstance(HSQUIRRELVM vm, C* ptr) {
