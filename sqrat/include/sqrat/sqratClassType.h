@@ -67,6 +67,16 @@ namespace Sqrat {
 			return (s_classTypeDataMap.find(vm) != s_classTypeDataMap.end());
 		}
 
+		static inline void deleteClassTypeData(HSQUIRRELVM vm)
+		{
+			//TODO: use mutex to lock s_classTypeDataMap in multithreaded environment
+			std::map< HSQUIRRELVM, ClassTypeData >::iterator it = s_classTypeDataMap.find(vm);
+			if(it != s_classTypeDataMap.end())
+			{
+				s_classTypeDataMap.erase(it);
+			}
+		}
+
 		// Get the Squirrel Object for this Class
 		static inline HSQOBJECT& ClassObject(HSQUIRRELVM vm) {
 			return getClassTypeData(vm).classObj;

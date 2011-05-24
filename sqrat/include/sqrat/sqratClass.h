@@ -70,6 +70,11 @@ namespace Sqrat {
 			}
 		}
 
+		~Class()
+		{
+			ClassType<C>::deleteClassTypeData(vm);
+		}
+
 		/// Get the Squirrel Object for this Class (const)
 		virtual HSQOBJECT GetObject() const {
 			return ClassType<C>::ClassObject(vm);
