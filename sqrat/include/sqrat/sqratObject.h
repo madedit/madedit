@@ -137,10 +137,10 @@ namespace Sqrat {
 			}
 		}
 
-		Object GetSlot(SQInteger idx) const {
+		Object GetSlot(SQInteger index) const {
 			HSQOBJECT slotObj;
 			sq_pushobject(vm, GetObject());
-			sq_pushinteger(vm, idx);
+			sq_pushinteger(vm, index);
 			if(SQ_FAILED(sq_get(vm, -2))) {
 				sq_pop(vm, 1);
 				return Object(vm); // Return a NULL object
@@ -149,6 +149,12 @@ namespace Sqrat {
 				sq_pop(vm, 2);
 				return Object(slotObj, vm);
 			}
+		}
+
+		template <class T>
+		inline Object operator[](T slot)
+		{
+			return GetSlot(slot);
 		}
 
 		template <class T>
