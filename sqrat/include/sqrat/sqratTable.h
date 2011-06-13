@@ -41,6 +41,10 @@ namespace Sqrat {
 	public:
 		TableBase(HSQUIRRELVM v = DefaultVM::Get()) : Object(v, true) {
 		}
+
+		TableBase(const Object& obj) : Object(obj) {
+		}
+
 		// Bind a Table or Class to the Table (Can be used to facilitate Namespaces)
 		// Note: Bind cannot be called "inline" like other functions because it introduces order-of-initialization bugs.
 		void Bind(const SQChar* name, Object& obj) {
@@ -69,6 +73,11 @@ namespace Sqrat {
 		template<class V>
 		TableBase& SetValue(const SQChar* name, const V& val) {
 			BindValue<V>(name, val, false);
+			return *this;
+		}
+		template<class V>
+		TableBase& SetValue(const SQInteger index, const V& val) {
+			BindValue<V>(index, val, false);
 			return *this;
 		}
 
@@ -115,6 +124,9 @@ namespace Sqrat {
 			sq_getstackobj(vm,-1,&obj);
 			sq_addref(vm, &obj);
 			sq_pop(vm,1);
+		}
+
+		Table(const Object& obj) : TableBase(obj) {
 		}
 	};
 

@@ -82,11 +82,14 @@ namespace Sqrat {
 		const SQChar* sqErr;
 		sq_getlasterror(vm);
 		if(sq_gettype(vm, -1) == OT_NULL) {
+			sq_pop(vm, 1);
 			return string();
 		}
 		sq_tostring(vm, -1);
 		sq_getstring(vm, -1, &sqErr);
-		return string(sqErr);
+		string str(sqErr);
+		sq_pop(vm, 2);
+		return str;
 	}
 
 }

@@ -46,7 +46,14 @@ namespace Sqrat {
 				errMsg = LastErrorString(vm);
 				return false;
 			}
+			if(!sq_isnull(obj))
+			{
+				sq_release(vm,&obj);
+			}
+
 			sq_getstackobj(vm,-1,&obj);
+			sq_addref(vm, &obj);
+			sq_pop(vm, 1);
 			return true;
 		}
 
@@ -65,8 +72,10 @@ namespace Sqrat {
 				sq_pushroottable(vm);
 				if(SQ_FAILED(sq_call(vm, 1, false, true))) {
 					errMsg = LastErrorString(vm);
+					sq_pop(vm, 1);
 					return false;
 				}
+				sq_pop(vm, 1);
 			}
 			return true;
 		}

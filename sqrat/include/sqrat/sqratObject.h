@@ -157,6 +157,13 @@ namespace Sqrat {
 			return GetSlot(slot);
 		}
 
+		SQInteger GetSize() const {
+			sq_pushobject(vm, GetObject());
+			SQInteger ret = sq_getsize(vm, -1);
+			sq_pop(vm, 1);
+			return ret;
+		}
+
 		template <class T>
 		T Cast() const {
 			sq_pushobject(vm, GetObject());
@@ -206,6 +213,14 @@ namespace Sqrat {
 		inline void BindValue(const SQChar* name, const V& val, bool staticVar = false) {
 			sq_pushobject(vm, GetObject());
 			sq_pushstring(vm, name, -1);
+			PushVar(vm, val);
+			sq_newslot(vm, -3, staticVar);
+			sq_pop(vm,1); // pop table
+		}
+		template<class V>
+		inline void BindValue(const SQInteger index, const V& val, bool staticVar = false) {
+			sq_pushobject(vm, GetObject());
+			sq_pushinteger(vm, index);
 			PushVar(vm, val);
 			sq_newslot(vm, -3, staticVar);
 			sq_pop(vm,1); // pop table
