@@ -137,33 +137,6 @@ namespace Sqrat {
 			}
 		}
 
-		Object GetSlot(SQInteger index) const {
-			HSQOBJECT slotObj;
-			sq_pushobject(vm, GetObject());
-			sq_pushinteger(vm, index);
-			if(SQ_FAILED(sq_get(vm, -2))) {
-				sq_pop(vm, 1);
-				return Object(vm); // Return a NULL object
-			} else {
-				sq_getstackobj(vm, -1, &slotObj);
-				sq_pop(vm, 2);
-				return Object(slotObj, vm);
-			}
-		}
-
-		template <class T>
-		inline Object operator[](T slot)
-		{
-			return GetSlot(slot);
-		}
-
-		SQInteger GetSize() const {
-			sq_pushobject(vm, GetObject());
-			SQInteger ret = sq_getsize(vm, -1);
-			sq_pop(vm, 1);
-			return ret;
-		}
-
 		template <class T>
 		T Cast() const {
 			sq_pushobject(vm, GetObject());
@@ -172,6 +145,33 @@ namespace Sqrat {
 			return ret;
 		}
 
+        Object GetSlot(SQInteger index) const {
+            HSQOBJECT slotObj;
+            sq_pushobject(vm, GetObject());
+            sq_pushinteger(vm, index);
+            if(SQ_FAILED(sq_get(vm, -2))) {
+                sq_pop(vm, 1);
+                return Object(vm); // Return a NULL object
+            } else {
+                sq_getstackobj(vm, -1, &slotObj);
+                sq_pop(vm, 2);
+                return Object(slotObj, vm);
+            }
+        }
+
+        template <class T>
+        inline Object operator[](T slot)
+        {
+            return GetSlot(slot);
+		}
+
+		SQInteger GetSize() const {
+			sq_pushobject(vm, GetObject());
+			SQInteger ret = sq_getsize(vm, -1);
+			sq_pop(vm, 1);
+			return ret;
+		}
+		
 	protected:
 		// Bind a function and it's associated Squirrel closure to the object
 		inline void BindFunc(const SQChar* name, void* method, size_t methodSize, SQFUNCTION func, bool staticVar = false) {

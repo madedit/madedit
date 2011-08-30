@@ -47,7 +47,7 @@ typedef struct {
     void			(*close)(HSQUIRRELVM v);
     void			(*setforeignptr)(HSQUIRRELVM v,SQUserPointer p);
     SQUserPointer	(*getforeignptr)(HSQUIRRELVM v);
-    void			(*setprintfunc)(HSQUIRRELVM v, SQPRINTFUNCTION printfunc);
+    void			(*setprintfunc)(HSQUIRRELVM v, SQPRINTFUNCTION printfunc, SQPRINTFUNCTION);
     SQPRINTFUNCTION	(*getprintfunc)(HSQUIRRELVM v);
     SQRESULT		(*suspendvm)(HSQUIRRELVM v);
     SQRESULT		(*wakeupvm)(HSQUIRRELVM v,SQBool resumedret,SQBool retval,SQBool raiseerror,SQBool throwerror);
@@ -67,7 +67,7 @@ typedef struct {
     void			(*remove)(HSQUIRRELVM v,SQInteger idx);
     SQInteger		(*gettop)(HSQUIRRELVM v);
     void			(*settop)(HSQUIRRELVM v,SQInteger newtop);
-    void			(*reservestack)(HSQUIRRELVM v,SQInteger nsize);
+    SQRESULT			(*reservestack)(HSQUIRRELVM v,SQInteger nsize);
     SQInteger		(*cmp)(HSQUIRRELVM v);
     void			(*move)(HSQUIRRELVM dest,HSQUIRRELVM src,SQInteger idx);
 
@@ -88,7 +88,7 @@ typedef struct {
     SQInteger		(*getsize)(HSQUIRRELVM v,SQInteger idx);
     SQRESULT		(*getbase)(HSQUIRRELVM v,SQInteger idx);
     SQBool			(*instanceof)(HSQUIRRELVM v);
-    void			(*tostring)(HSQUIRRELVM v,SQInteger idx);
+    SQRESULT			(*tostring)(HSQUIRRELVM v,SQInteger idx);
     void			(*tobool)(HSQUIRRELVM v, SQInteger idx, SQBool *b);
     SQRESULT		(*getstring)(HSQUIRRELVM v,SQInteger idx,const SQChar **c);
     SQRESULT		(*getinteger)(HSQUIRRELVM v,SQInteger idx,SQInteger *i);

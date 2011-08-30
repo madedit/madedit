@@ -67,7 +67,7 @@ namespace Sqrat {
 
 			sq_pushstring(vm, overloadName.c_str(), -1);
 			if(SQ_FAILED(sq_get(vm, 1))) { // Lookup the proper overload
-				return 0; // How to appropriately error?
+				return sq_throwerror(vm, "No overload matching this argument list found");// How to best appropriately error?
 			} 
 			
 			// Push the args again
@@ -99,7 +99,7 @@ namespace Sqrat {
 
 			sq_pushstring(vm, overloadName.c_str(), -1);
 			if(SQ_FAILED(sq_get(vm, 1))) { // Lookup the proper overload
-				return 0; // How to appropriately error?
+				return sq_throwerror(vm, "No overload matching this argument list found");// How to best appropriately error?
 			}
 			
 			// Push the args again

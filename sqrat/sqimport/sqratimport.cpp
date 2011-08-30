@@ -36,6 +36,10 @@
 
 #include <windows.h>
 
+#elsif defned (__unix)
+
+#include <dlfcn.h>
+
 #endif
 
 typedef SQRESULT (*SQMODULELOAD)(HSQUIRRELVM v, HSQAPI sq);
@@ -205,7 +209,7 @@ SQRESULT sqrat_importscript(HSQUIRRELVM v, const SQChar* moduleName) {
 }
 
 SQRESULT sqrat_importbin(HSQUIRRELVM v, const SQChar* moduleName) {
-	SQMODULELOAD modLoad;
+	SQMODULELOAD modLoad = 0;
 
 #if defined(_WIN32)
 	HMODULE mod;
@@ -219,8 +223,22 @@ SQRESULT sqrat_importbin(HSQUIRRELVM v, const SQChar* moduleName) {
 
 	modLoad = (SQMODULELOAD)GetProcAddress(mod, "sqmodule_load");
 	if(modLoad == NULL) {
+	    FreeLibrary(mod);
 		return SQ_ERROR;
 	}
+#elif defined(__unix)
+/* adding .so to moduleName? */
+    void *mod = dlopen(moduleName, RTLD_NOW | RTLD_LOCAL | RTLD_NOLOAD); //RTLD_NOLOAD flag is not specified in POSIX.1-2001..so not the best solution :(
+    if (mod == NULL) {
+        mod = dlopen(moduleName, RTLD_NOW | RTLD_LOCAL);
+        if (mod == NULL)
+            return SQ_ERROR;
+    }
+    modLoad = (SQMODULELOAD) dlsym(mod, "sqmodule_load");
+    if (modLoad == NULL) {
+        dlclose(mod);
+        return SQ_ERROR;
+    }
 #endif
 	
 	if(sqapi == NULL) {

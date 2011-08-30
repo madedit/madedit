@@ -50,7 +50,6 @@ namespace Sqrat {
 			{
 				sq_release(vm,&obj);
 			}
-
 			sq_getstackobj(vm,-1,&obj);
 			sq_addref(vm, &obj);
 			sq_pop(vm, 1);
@@ -62,7 +61,13 @@ namespace Sqrat {
 				errMsg = LastErrorString(vm);
 				return false;
 			}
+			if(!sq_isnull(obj))
+			{
+				sq_release(vm,&obj);
+			}
 			sq_getstackobj(vm,-1,&obj);
+			sq_addref(vm, &obj);
+			sq_pop(vm, 1);
 			return true;
 		}
 
