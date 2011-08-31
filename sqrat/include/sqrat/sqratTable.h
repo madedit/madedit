@@ -111,9 +111,23 @@ namespace Sqrat {
 				sq_pushnull(vm);
 			}
 			sq_getstackobj(vm, -1, &funcObj);
+			Function ret(vm, GetObject(), funcObj);
 			sq_pop(vm, 2);
 
-			return Function(vm, GetObject(), funcObj);
+			return ret;
+		}
+		Function GetFunction(const SQInteger index) {
+			HSQOBJECT funcObj;
+			sq_pushobject(vm, GetObject());
+			sq_pushinteger(vm, index);
+			if(SQ_FAILED(sq_get(vm, -2))) {
+				sq_pushnull(vm);
+			}
+			sq_getstackobj(vm, -1, &funcObj);
+			Function ret(vm, GetObject(), funcObj);
+			sq_pop(vm, 2);
+
+			return ret;
 		}
 	};
 

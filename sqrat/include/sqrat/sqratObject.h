@@ -132,8 +132,9 @@ namespace Sqrat {
 				return Object(vm); // Return a NULL object
 			} else {
 				sq_getstackobj(vm, -1, &slotObj);
+				Object ret(slotObj, vm); // must addref before the pop!
 				sq_pop(vm, 2);
-				return Object(slotObj, vm);
+				return ret;
 			}
 		}
 
@@ -154,8 +155,9 @@ namespace Sqrat {
                 return Object(vm); // Return a NULL object
             } else {
                 sq_getstackobj(vm, -1, &slotObj);
+                Object ret(slotObj, vm); // must addref before the pop!
                 sq_pop(vm, 2);
-                return Object(slotObj, vm);
+                return ret;
             }
         }
 
@@ -177,6 +179,17 @@ namespace Sqrat {
 		inline void BindFunc(const SQChar* name, void* method, size_t methodSize, SQFUNCTION func, bool staticVar = false) {
 			sq_pushobject(vm, GetObject());
 			sq_pushstring(vm, name, -1);
+
+			SQUserPointer methodPtr = sq_newuserdata(vm, static_cast<SQUnsignedInteger>(methodSize));
+			memcpy(methodPtr, method, methodSize);
+
+			sq_newclosure(vm, func, 1);
+			sq_newslot(vm, -3, staticVar);
+			sq_pop(vm,1); // pop table
+		}
+		inline void BindFunc(const SQInteger index, void* method, size_t methodSize, SQFUNCTION func, bool staticVar = false) {
+			sq_pushobject(vm, GetObject());
+			sq_pushinteger(vm, index);
 
 			SQUserPointer methodPtr = sq_newuserdata(vm, static_cast<SQUnsignedInteger>(methodSize));
 			memcpy(methodPtr, method, methodSize);
@@ -231,6 +244,14 @@ namespace Sqrat {
 		inline void BindInstance(const SQChar* name, V* val, bool staticVar = false) {
 			sq_pushobject(vm, GetObject());
 			sq_pushstring(vm, name, -1);
+			PushVar(vm, val);
+			sq_newslot(vm, -3, staticVar);
+			sq_pop(vm,1); // pop table
+		}
+		template<class V>
+		inline void BindInstance(const SQInteger index, V* val, bool staticVar = false) {
+			sq_pushobject(vm, GetObject());
+			sq_pushinteger(vm, index);
 			PushVar(vm, val);
 			sq_newslot(vm, -3, staticVar);
 			sq_pop(vm,1); // pop table

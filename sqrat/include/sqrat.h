@@ -36,5 +36,6 @@
 #include "sqrat/sqratConst.h"
 #include "sqrat/sqratUtil.h"
 #include "sqrat/sqratScript.h"
+#include "sqrat/sqratArray.h"
 
 #endif

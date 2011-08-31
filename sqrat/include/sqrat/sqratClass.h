@@ -233,9 +233,23 @@ public:
             sq_pushnull(vm);
         }
         sq_getstackobj(vm, -1, &funcObj);
+        Function ret(vm, ClassType<C>::ClassObject(vm), funcObj); // must addref before the pop!
         sq_pop(vm, 2);
 
-        return Function(vm, ClassType<C>::ClassObject(vm), funcObj);
+        return ret;
+    }
+    Function GetFunction(const SQInteger index) {
+        HSQOBJECT funcObj;
+        sq_pushobject(vm, ClassType<C>::ClassObject(vm));
+        sq_pushinteger(vm, index);
+        if(SQ_FAILED(sq_get(vm, -2))) {
+            sq_pushnull(vm);
+        }
+        sq_getstackobj(vm, -1, &funcObj);
+        Function ret(vm, ClassType<C>::ClassObject(vm), funcObj); // must addref before the pop!
+        sq_pop(vm, 2);
+
+        return ret;
     }
 
 protected:
