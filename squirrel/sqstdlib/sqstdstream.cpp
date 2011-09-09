@@ -266,15 +266,15 @@ void init_streamclass(HSQUIRRELVM v)
 			sq_pushstring(v,f.name,-1);
 			sq_newclosure(v,f.f,0);
 			sq_setparamscheck(v,f.nparamscheck,f.typemask);
-			sq_createslot(v,-3);
+			sq_newslot(v,-3,SQFalse);
 			i++;
 		}
-		sq_createslot(v,-3);
+		sq_newslot(v,-3,SQFalse);
 		sq_pushroottable(v);
 		sq_pushstring(v,_SC("stream"),-1);
 		sq_pushstring(v,_SC("std_stream"),-1);
 		sq_get(v,-4);
-		sq_createslot(v,-3);
+		sq_newslot(v,-3,SQFalse);
 		sq_pop(v,1);
 	}
 	else {
@@ -303,10 +303,10 @@ SQRESULT declare_stream(HSQUIRRELVM v,const SQChar* name,SQUserPointer typetag,c
 			sq_newclosure(v,f.f,0);
 			sq_setparamscheck(v,f.nparamscheck,f.typemask);
 			sq_setnativeclosurename(v,-1,f.name);
-			sq_createslot(v,-3);
+			sq_newslot(v,-3,SQFalse);
 			i++;
 		}
-		sq_createslot(v,-3);
+		sq_newslot(v,-3,SQFalse);
 		sq_pop(v,1);
 		
 		i = 0;
@@ -317,7 +317,7 @@ SQRESULT declare_stream(HSQUIRRELVM v,const SQChar* name,SQUserPointer typetag,c
 			sq_newclosure(v,f.f,0);
 			sq_setparamscheck(v,f.nparamscheck,f.typemask);
 			sq_setnativeclosurename(v,-1,f.name);
-			sq_createslot(v,-3);
+			sq_newslot(v,-3,SQFalse);
 			i++;
 		}
 		//register the class in the target table
@@ -326,7 +326,7 @@ SQRESULT declare_stream(HSQUIRRELVM v,const SQChar* name,SQUserPointer typetag,c
 		sq_pushstring(v,reg_name,-1);
 		sq_get(v,-2);
 		sq_remove(v,-2);
-		sq_createslot(v,-3);
+		sq_newslot(v,-3,SQFalse);
 
 		sq_settop(v,top);
 		return SQ_OK;

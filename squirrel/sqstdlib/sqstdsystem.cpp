@@ -129,7 +129,7 @@ static SQRegFunction systemlib_funcs[]={
 	_DECL_FUNC(rename,3,_SC(".ss")),
 	{0,0}
 };
-
+#undef _DECL_FUNC
 
 SQInteger sqstd_register_systemlib(HSQUIRRELVM v)
 {
@@ -140,7 +140,7 @@ SQInteger sqstd_register_systemlib(HSQUIRRELVM v)
 		sq_newclosure(v,systemlib_funcs[i].f,0);
 		sq_setparamscheck(v,systemlib_funcs[i].nparamscheck,systemlib_funcs[i].typemask);
 		sq_setnativeclosurename(v,-1,systemlib_funcs[i].name);
-		sq_createslot(v,-3);
+		sq_newslot(v,-3,SQFalse);
 		i++;
 	}
 	return 1;

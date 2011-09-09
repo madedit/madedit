@@ -115,7 +115,8 @@ static SQInteger _blob__typeof(HSQUIRRELVM v)
 static SQInteger _blob_releasehook(SQUserPointer p, SQInteger size)
 {
 	SQBlob *self = (SQBlob*)p;
-	delete self;
+	self->~SQBlob();
+	sq_free(self,sizeof(SQBlob));
 	return 1;
 }
 
@@ -127,9 +128,12 @@ static SQInteger _blob_constructor(HSQUIRRELVM v)
 		sq_getinteger(v, 2, &size);
 	}
 	if(size < 0) return sq_throwerror(v, _SC("cannot create blob with negative size"));
-	SQBlob *b = new SQBlob(size);
+	//SQBlob *b = new SQBlob(size);
+
+	SQBlob *b = new (sq_malloc(sizeof(SQBlob)))SQBlob(size);
 	if(SQ_FAILED(sq_setinstanceup(v,1,b))) {
-		delete b;
+		b->~SQBlob();
+		sq_free(b,sizeof(SQBlob));
 		return sq_throwerror(v, _SC("cannot create blob"));
 	}
 	sq_setreleasehook(v,1,_blob_releasehook);
@@ -143,10 +147,12 @@ static SQInteger _blob__cloned(HSQUIRRELVM v)
 		if(SQ_FAILED(sq_getinstanceup(v,2,(SQUserPointer*)&other,(SQUserPointer)SQSTD_BLOB_TYPE_TAG)))
 			return SQ_ERROR; 
 	}
-	SQBlob *thisone = new SQBlob(other->Len());
+	//SQBlob *thisone = new SQBlob(other->Len());
+	SQBlob *thisone = new (sq_malloc(sizeof(SQBlob)))SQBlob(other->Len());
 	memcpy(thisone->GetBuf(),other->GetBuf(),thisone->Len());
 	if(SQ_FAILED(sq_setinstanceup(v,1,thisone))) {
-		delete thisone;
+		thisone->~SQBlob();
+		sq_free(thisone,sizeof(SQBlob));
 		return sq_throwerror(v, _SC("cannot clone blob"));
 	}
 	sq_setreleasehook(v,1,_blob_releasehook);
