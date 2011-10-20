@@ -13,16 +13,16 @@
 // including commercial applications, and to alter it and redistribute it
 // freely, subject to the following restrictions:
 //
-//	1. The origin of this software must not be misrepresented; you must not
-//	claim that you wrote the original software. If you use this software
-//	in a product, an acknowledgment in the product documentation would be
-//	appreciated but is not required.
+//  1. The origin of this software must not be misrepresented; you must not
+//  claim that you wrote the original software. If you use this software
+//  in a product, an acknowledgment in the product documentation would be
+//  appreciated but is not required.
 //
-//	2. Altered source versions must be plainly marked as such, and must not be
-//	misrepresented as being the original software.
+//  2. Altered source versions must be plainly marked as such, and must not be
+//  misrepresented as being the original software.
 //
-//	3. This notice may not be removed or altered from any source
-//	distribution.
+//  3. This notice may not be removed or altered from any source
+//  distribution.
 //
 
 #if !defined(_SCRAT_UTIL_H_)
@@ -35,62 +35,59 @@
 
 namespace Sqrat {
 
-	class DefaultVM {
-	private:
-		static HSQUIRRELVM& staticVm() {
-			static HSQUIRRELVM vm;
-			return vm;
-		}
-	public:
-		static HSQUIRRELVM Get() {
-			return staticVm();
-		}
-		static void Set(HSQUIRRELVM vm) {
-			staticVm() = vm;
-		}
-	};
+class DefaultVM {
+private:
+    static HSQUIRRELVM& staticVm() {
+        static HSQUIRRELVM vm;
+        return vm;
+    }
+public:
+    static HSQUIRRELVM Get() {
+        return staticVm();
+    }
+    static void Set(HSQUIRRELVM vm) {
+        staticVm() = vm;
+    }
+};
 
-	class ErrorHandling {
-	private:
-		static bool& errorHandling() {
-			static bool eh = true;
-			return eh;
-		}
-	public:
-		static bool IsEnabled() {
-			return errorHandling();
-		}
-		static void Enable(bool enable) {
-			errorHandling() = enable;
-		}
-	};
+class ErrorHandling {
+private:
+    static bool& errorHandling() {
+        static bool eh = true;
+        return eh;
+    }
+public:
+    static bool IsEnabled() {
+        return errorHandling();
+    }
+    static void Enable(bool enable) {
+        errorHandling() = enable;
+    }
+};
 
-	class Exception {
-	public:
-		Exception(const string& msg) : message(msg) {}
-		Exception(const Exception& ex) : message(ex.message) {}
-		
-		const string Message() const {
-			return message;
-		}
+class Exception {
+public:
+    Exception(const string& msg) : message(msg) {}
+    Exception(const Exception& ex) : message(ex.message) {}
 
-	private:
-		string message;
-	};
+    const string Message() const {
+        return message;
+    }
 
-	inline string LastErrorString( HSQUIRRELVM vm ) {
-		const SQChar* sqErr;
-		sq_getlasterror(vm);
-		if(sq_gettype(vm, -1) == OT_NULL) {
-			sq_pop(vm, 1);
-			return string();
-		}
-		sq_tostring(vm, -1);
-		sq_getstring(vm, -1, &sqErr);
-		string str(sqErr);
-		sq_pop(vm, 2);
-		return str;
-	}
+private:
+    string message;
+};
+
+inline string LastErrorString( HSQUIRRELVM vm ) {
+    const SQChar* sqErr;
+    sq_getlasterror(vm);
+    if(sq_gettype(vm, -1) == OT_NULL) {
+        return string();
+    }
+    sq_tostring(vm, -1);
+    sq_getstring(vm, -1, &sqErr);
+    return string(sqErr);
+}
 
 }
 

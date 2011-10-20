@@ -13,16 +13,16 @@
 // including commercial applications, and to alter it and redistribute it
 // freely, subject to the following restrictions:
 //
-//	1. The origin of this software must not be misrepresented; you must not
-//	claim that you wrote the original software. If you use this software
-//	in a product, an acknowledgment in the product documentation would be
-//	appreciated but is not required.
+//  1. The origin of this software must not be misrepresented; you must not
+//  claim that you wrote the original software. If you use this software
+//  in a product, an acknowledgment in the product documentation would be
+//  appreciated but is not required.
 //
-//	2. Altered source versions must be plainly marked as such, and must not be
-//	misrepresented as being the original software.
+//  2. Altered source versions must be plainly marked as such, and must not be
+//  misrepresented as being the original software.
 //
-//	3. This notice may not be removed or altered from any source
-//	distribution.
+//  3. This notice may not be removed or altered from any source
+//  distribution.
 //
 
 #if !defined(_SCRAT_SCRIPT_H_)
@@ -36,62 +36,62 @@
 
 namespace Sqrat {
 
-	class Script : public Object {
-	public:
-		Script(HSQUIRRELVM v = DefaultVM::Get()) : Object(v, false) {
-		}
+class Script : public Object {
+public:
+    Script(HSQUIRRELVM v = DefaultVM::Get()) : Object(v, false) {
+    }
 
-		bool CompileString(const string& script, string& errMsg) {
-			if(SQ_FAILED(sq_compilebuffer(vm, script.c_str(), static_cast<SQInteger>(script.size() * sizeof(SQChar)), _SC(""), true))) {
-				errMsg = LastErrorString(vm);
-				return false;
-			}
-			if(!sq_isnull(obj))
-			{
-				sq_release(vm,&obj);
-			}
-			sq_getstackobj(vm,-1,&obj);
-			sq_addref(vm, &obj);
-			sq_pop(vm, 1);
-			return true;
-		}
+    bool CompileString(const string& script, string& errMsg) {
+        if(SQ_FAILED(sq_compilebuffer(vm, script.c_str(), static_cast<SQInteger>(script.size() * sizeof(SQChar)), _SC(""), true))) {
+            errMsg = LastErrorString(vm);
+            return false;
+        }
+        if(!sq_isnull(obj))
+        {
+            sq_release(vm,&obj);
+        }
+        sq_getstackobj(vm,-1,&obj);
+        sq_addref(vm, &obj);
+        sq_pop(vm, 1);
+        return true;
+    }
 
-		bool CompileFile(const string& path, string& errMsg) {
-			if(SQ_FAILED(sqstd_loadfile(vm, path.c_str(), true))) {
-				errMsg = LastErrorString(vm);
-				return false;
-			}
-			if(!sq_isnull(obj))
-			{
-				sq_release(vm,&obj);
-			}
-			sq_getstackobj(vm,-1,&obj);
-			sq_addref(vm, &obj);
-			sq_pop(vm, 1);
-			return true;
-		}
+    bool CompileFile(const string& path, string& errMsg) {
+        if(SQ_FAILED(sqstd_loadfile(vm, path.c_str(), true))) {
+            errMsg = LastErrorString(vm);
+            return false;
+        }
+        if(!sq_isnull(obj))
+        {
+            sq_release(vm,&obj);
+        }
+        sq_getstackobj(vm,-1,&obj);
+        sq_addref(vm, &obj);
+        sq_pop(vm, 1);
+        return true;
+    }
 
-		bool Run(string& errMsg) {
-			if(!sq_isnull(obj)) {
-				sq_pushobject(vm, obj);
-				sq_pushroottable(vm);
-				if(SQ_FAILED(sq_call(vm, 1, false, true))) {
-					errMsg = LastErrorString(vm);
-					sq_pop(vm, 1);
-					return false;
-				}
-				sq_pop(vm, 1);
-			}
-			return true;
-		}
+    bool Run(string& errMsg) {
+        if(!sq_isnull(obj)) {
+            sq_pushobject(vm, obj);
+            sq_pushroottable(vm);
+            if(SQ_FAILED(sq_call(vm, 1, false, true))) {
+                errMsg = LastErrorString(vm);
+                sq_pop(vm, 1);
+                return false;
+            }
+            sq_pop(vm, 1);
+        }
+        return true;
+    }
 
-		void WriteCompiledFile(const string& path) {
-			if(!sq_isnull(obj)) {
-				sq_pushobject(vm, obj);
-				sqstd_writeclosuretofile(vm, path.c_str());
-			}
-		}
-	};
+    void WriteCompiledFile(const string& path) {
+        if(!sq_isnull(obj)) {
+            sq_pushobject(vm, obj);
+            sqstd_writeclosuretofile(vm, path.c_str());
+        }
+    }
+};
 }
 
 #endif

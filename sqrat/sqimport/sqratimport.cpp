@@ -13,16 +13,16 @@
 // including commercial applications, and to alter it and redistribute it
 // freely, subject to the following restrictions:
 //
-//	1. The origin of this software must not be misrepresented; you must not
-//	claim that you wrote the original software. If you use this software
-//	in a product, an acknowledgment in the product documentation would be
-//	appreciated but is not required.
+//  1. The origin of this software must not be misrepresented; you must not
+//  claim that you wrote the original software. If you use this software
+//  in a product, an acknowledgment in the product documentation would be
+//  appreciated but is not required.
 //
-//	2. Altered source versions must be plainly marked as such, and must not be
-//	misrepresented as being the original software.
+//  2. Altered source versions must be plainly marked as such, and must not be
+//  misrepresented as being the original software.
 //
-//	3. This notice may not be removed or altered from any source
-//	distribution.
+//  3. This notice may not be removed or altered from any source
+//  distribution.
 //
 
 #include "sqratimport.h"
@@ -36,7 +36,7 @@
 
 #include <windows.h>
 
-#elsif defned (__unix)
+#elif defined(__unix)
 
 #include <dlfcn.h>
 
@@ -49,10 +49,10 @@ HSQAPI sqapi = NULL;
 // Create and populate the HSQAPI structure with function pointers
 // If new functions are added to the Squirrel API, they should be added here too
 HSQAPI sqrat_newapi() {
-	HSQAPI sq = (HSQAPI)sq_malloc(sizeof(sq_api));
-	
-	/*vm*/
-	sq->open = sq_open;
+    HSQAPI sq = (HSQAPI)sq_malloc(sizeof(sq_api));
+
+    /*vm*/
+    sq->open = sq_open;
     sq->newthread = sq_newthread;
     sq->seterrorhandler = sq_seterrorhandler;
     sq->close = sq_close;
@@ -63,15 +63,15 @@ HSQAPI sqrat_newapi() {
     sq->suspendvm = sq_suspendvm;
     sq->wakeupvm = sq_wakeupvm;
     sq->getvmstate = sq_getvmstate;
-	
-	/*compiler*/
+
+    /*compiler*/
     sq->compile = sq_compile;
     sq->compilebuffer = sq_compilebuffer;
     sq->enabledebuginfo = sq_enabledebuginfo;
     sq->notifyallexceptions = sq_notifyallexceptions;
     sq->setcompilererrorhandler = sq_setcompilererrorhandler;
-	
-	/*stack operations*/
+
+    /*stack operations*/
     sq->push = sq_push;
     sq->pop = sq_pop;
     sq->poptop = sq_poptop;
@@ -81,8 +81,8 @@ HSQAPI sqrat_newapi() {
     sq->reservestack = sq_reservestack;
     sq->cmp = sq_cmp;
     sq->move = sq_move;
-	
-	/*object creation handling*/
+
+    /*object creation handling*/
     sq->newuserdata = sq_newuserdata;
     sq->newtable = sq_newtable;
     sq->newarray = sq_newarray;
@@ -124,7 +124,7 @@ HSQAPI sqrat_newapi() {
     sq->weakref = sq_weakref;
     sq->getdefaultdelegate = sq_getdefaultdelegate;
 
-	/*object manipulation*/
+    /*object manipulation*/
     sq->pushroottable = sq_pushroottable;
     sq->pushregistrytable = sq_pushregistrytable;
     sq->pushconsttable = sq_pushconsttable;
@@ -150,8 +150,8 @@ HSQAPI sqrat_newapi() {
     sq->next = sq_next;
     sq->getweakrefval = sq_getweakrefval;
     sq->clear = sq_clear;
-	
-	/*calls*/
+
+    /*calls*/
     sq->call = sq_call;
     sq->resume = sq_resume;
     sq->getlocal = sq_getlocal;
@@ -159,8 +159,8 @@ HSQAPI sqrat_newapi() {
     sq->throwerror = sq_throwerror;
     sq->reseterror = sq_reseterror;
     sq->getlasterror = sq_getlasterror;
-	
-	/*raw object handling*/
+
+    /*raw object handling*/
     sq->getstackobj = sq_getstackobj;
     sq->pushobject = sq_pushobject;
     sq->addref = sq_addref;
@@ -171,63 +171,63 @@ HSQAPI sqrat_newapi() {
     sq->objtointeger = sq_objtointeger;
     sq->objtofloat = sq_objtofloat;
     sq->getobjtypetag = sq_getobjtypetag;
-	
-	/*GC*/
+
+    /*GC*/
     sq->collectgarbage = sq_collectgarbage;
-	
-	/*serialization*/
+
+    /*serialization*/
     sq->writeclosure = sq_writeclosure;
     sq->readclosure = sq_readclosure;
-	
-	/*mem allocation*/
+
+    /*mem allocation*/
     sq->malloc = sq_malloc;
     sq->realloc = sq_realloc;
     sq->free = sq_free;
-	
-	/*debug*/
+
+    /*debug*/
     sq->stackinfos = sq_stackinfos;
     sq->setdebughook = sq_setdebughook;
 
-	return sq;
+    return sq;
 }
 
 void sqrat_deleteapi(HSQAPI sq) {
-	sq_free(sq, sizeof(sq_api));
+    sq_free(sq, sizeof(sq_api));
 }
 
 SQRESULT sqrat_importscript(HSQUIRRELVM v, const SQChar* moduleName) {
-	std::basic_string<SQChar> filename(moduleName);
-	filename += _SC(".nut");
-	if(SQ_FAILED(sqstd_loadfile(v, moduleName, true))) {
-		if(SQ_FAILED(sqstd_loadfile(v, filename.c_str(), true))) {
-			return SQ_ERROR;
-		}
-	}	
-	sq_push(v, -2);
-	sq_call(v, 1, false, true);
-	return SQ_OK;
+    std::basic_string<SQChar> filename(moduleName);
+    filename += _SC(".nut");
+    if(SQ_FAILED(sqstd_loadfile(v, moduleName, true))) {
+        if(SQ_FAILED(sqstd_loadfile(v, filename.c_str(), true))) {
+            return SQ_ERROR;
+        }
+    }
+    sq_push(v, -2);
+    sq_call(v, 1, false, true);
+    return SQ_OK;
 }
 
 SQRESULT sqrat_importbin(HSQUIRRELVM v, const SQChar* moduleName) {
-	SQMODULELOAD modLoad = 0;
+    SQMODULELOAD modLoad = 0;
 
 #if defined(_WIN32)
-	HMODULE mod;
-	mod = GetModuleHandle(moduleName);
-	if(mod == NULL) {
-		mod = LoadLibrary(moduleName);
-		if(mod == NULL) { 
-			return SQ_ERROR;
-		}
-	}
+    HMODULE mod;
+    mod = GetModuleHandle(moduleName);
+    if(mod == NULL) {
+        mod = LoadLibrary(moduleName);
+        if(mod == NULL) {
+            return SQ_ERROR;
+        }
+    }
 
-	modLoad = (SQMODULELOAD)GetProcAddress(mod, "sqmodule_load");
-	if(modLoad == NULL) {
-	    FreeLibrary(mod);
-		return SQ_ERROR;
-	}
+    modLoad = (SQMODULELOAD)GetProcAddress(mod, "sqmodule_load");
+    if(modLoad == NULL) {
+        FreeLibrary(mod);
+        return SQ_ERROR;
+    }
 #elif defined(__unix)
-/* adding .so to moduleName? */
+    /* adding .so to moduleName? */
     void *mod = dlopen(moduleName, RTLD_NOW | RTLD_LOCAL | RTLD_NOLOAD); //RTLD_NOLOAD flag is not specified in POSIX.1-2001..so not the best solution :(
     if (mod == NULL) {
         mod = dlopen(moduleName, RTLD_NOW | RTLD_LOCAL);
@@ -240,66 +240,66 @@ SQRESULT sqrat_importbin(HSQUIRRELVM v, const SQChar* moduleName) {
         return SQ_ERROR;
     }
 #endif
-	
-	if(sqapi == NULL) {
-		sqapi = sqrat_newapi(); // Caching this for multiple imports is probably a very good idea
-	}
 
-	SQRESULT res = modLoad(v, sqapi);
+    if(sqapi == NULL) {
+        sqapi = sqrat_newapi(); // Caching this for multiple imports is probably a very good idea
+    }
 
-	return res;
+    SQRESULT res = modLoad(v, sqapi);
+
+    return res;
 }
 
 SQRESULT sqrat_import(HSQUIRRELVM v) {
-	const SQChar* moduleName;
-	HSQOBJECT table;
-	SQRESULT res = SQ_OK;
-	
-	SQInteger top = sq_gettop(v);
-	sq_getstring(v, -2, &moduleName);
-	sq_getstackobj(v, -1, &table);
-	sq_addref(v, &table);
+    const SQChar* moduleName;
+    HSQOBJECT table;
+    SQRESULT res = SQ_OK;
 
-	sq_settop(v, 0); // Clear Stack
-	sq_pushobject(v, table); // Push the target table onto the stack
-	
-	if(SQ_FAILED(sqrat_importscript(v, moduleName))) {
-		res = sqrat_importbin(v, moduleName);
-	}
+    SQInteger top = sq_gettop(v);
+    sq_getstring(v, -2, &moduleName);
+    sq_getstackobj(v, -1, &table);
+    sq_addref(v, &table);
 
-	sq_settop(v, 0); // Clean up the stack (just in case the module load leaves it messy)
-	sq_pushobject(v, table); // return the target table
+    sq_settop(v, 0); // Clear Stack
+    sq_pushobject(v, table); // Push the target table onto the stack
 
-	return res;
+    if(SQ_FAILED(sqrat_importscript(v, moduleName))) {
+        res = sqrat_importbin(v, moduleName);
+    }
+
+    sq_settop(v, 0); // Clean up the stack (just in case the module load leaves it messy)
+    sq_pushobject(v, table); // return the target table
+
+    return res;
 }
 
 SQInteger sqratbase_import(HSQUIRRELVM v) {
-	SQInteger args = sq_gettop(v);
-	switch(args) {
-		case 2:
-			sq_pushroottable(v);
-			break;
-		case 3:
-			// should already have the desired table pushed onto the stack
-			break;
-		default:
-			// Error, unexpected number of arguments
-			break;
-	}
+    SQInteger args = sq_gettop(v);
+    switch(args) {
+    case 2:
+        sq_pushroottable(v);
+        break;
+    case 3:
+        // should already have the desired table pushed onto the stack
+        break;
+    default:
+        // Error, unexpected number of arguments
+        break;
+    }
 
-	sqrat_import(v);
-	
-	return 1;
+    sqrat_import(v);
+
+    return 1;
 }
 
 SQRESULT sqrat_register_importlib(HSQUIRRELVM v) {
-	sq_pushroottable(v);
+    sq_pushroottable(v);
 
-	sq_pushstring(v, _SC("import"), -1);
-	sq_newclosure(v, &sqratbase_import, 0);
-	sq_newslot(v, -3, 0);
+    sq_pushstring(v, _SC("import"), -1);
+    sq_newclosure(v, &sqratbase_import, 0);
+    sq_newslot(v, -3, 0);
 
-	sq_pop(v, 1); // pop sqrat table
+    sq_pop(v, 1); // pop sqrat table
 
-	return SQ_OK;
+    return SQ_OK;
 }
