@@ -20,6 +20,8 @@
 // headers
 // ----------------------------------------------------------------------------
 
+#ifndef __WXMSW__
+
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 
@@ -282,3 +284,5 @@ void wxCaretNew::DoDraw(wxDC *dc)
 }
 
 #endif // wxUSE_CARET
+
+#endif // __WXMSW__
