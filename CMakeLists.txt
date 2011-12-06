@@ -25,7 +25,7 @@ IF(WXCONFIG)
         )
 ELSE(WXCONFIG)
     #use default module
-    FIND_PACKAGE(wxWidgets REQUIRED core base aui)
+    FIND_PACKAGE(wxWidgets REQUIRED aui core base)
     INCLUDE(${wxWidgets_USE_FILE})
 ENDIF(WXCONFIG)
 
@@ -37,7 +37,7 @@ ELSE(Boost_INCLUDE_DIRS)
     INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 ENDIF(Boost_INCLUDE_DIRS)
 
-#gtk
+# gtk
 IF(UNIX)
     FIND_PACKAGE(GTK2)
     IF(GTK2_FOUND)
